@@ -5,5 +5,6 @@ package com.tao.service;
  * @Author tao.he
  * @Since 2022/1/20 15:40
  */
-public class OperationService {
+public interface OperationService {
+    void afterCommit();
 }

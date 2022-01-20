@@ -19,6 +19,7 @@
         <module>mapstruct-example</module>
         <module>redis-websocket-example</module>
         <module>example-common</module>
+        <module>transaction-event</module>
     </modules>
 
 
