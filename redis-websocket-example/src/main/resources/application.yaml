@@ -1,5 +1,0 @@
-spring:
-  redis:
-    host: 119.91.255.96
-    port: 30379
-    password: jwdlh@2021
