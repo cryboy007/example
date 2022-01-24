@@ -20,6 +20,7 @@
         <module>redis-websocket-example</module>
         <module>example-common</module>
         <module>transaction-event</module>
+        <module>aviator-example</module>
     </modules>
 
 
