@@ -11,9 +11,15 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum InitQueueEnum {
-		AUTO_QUEUE_ONE("AUTO_INIT_EXCHANGE_ONE","AUTO_INIT_QUEUE");
+		AUTO_QUEUE_ONE("AUTO_INIT_EXCHANGE_ONE","AUTO_INIT_QUEUE",""),
+		/**
+		 * 死信队列
+		 */
+		DEAL_BUSINESS_EXCHANGE("DEAD_LETTER_EXCHANGE","DEAD_LETTER_QUEUE","")
 	;
 	private final String exchange;
 
 	private final String queue;
+
+	private final String routeKey;
 }
