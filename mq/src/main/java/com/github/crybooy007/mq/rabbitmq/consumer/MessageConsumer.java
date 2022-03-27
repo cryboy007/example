@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Consumer;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.amqp.core.ExchangeTypes;
@@ -12,7 +13,7 @@ import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,6 +26,19 @@ import org.springframework.stereotype.Component;
 public class MessageConsumer //implements ChannelAwareMessageListener
 {
 	private final AtomicInteger count = new AtomicInteger(0);
+
+	private Consumer consumer;
+
+/*	@Autowired
+	public void setConsumer(Consumer consumer) {
+		this.consumer = consumer;
+	}
+
+
+	@RabbitListener(queues = "flush.cache.queue")
+	public void flushCache(Message message,Channel channel) throws IOException {
+		channel.basicConsume("flush.cache.queue",true,consumer);
+	}*/
 
 	@RabbitListener(
 			bindings = @QueueBinding(

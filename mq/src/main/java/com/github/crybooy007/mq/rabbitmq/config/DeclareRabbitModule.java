@@ -40,14 +40,14 @@ public class DeclareRabbitModule implements SmartInitializingSingleton {
 			for (InitQueueEnum rabbitEnum : values) {
 				//死信队列
 				if (rabbitEnum.getExchange().startsWith("DEAL")) {
-					DirectExchange directExchange = new DirectExchange(rabbitEnum.getExchange(), true, false);
+					/*DirectExchange directExchange = new DirectExchange(rabbitEnum.getExchange(), true, false);
 					HashMap<String, Object> arguments = Maps.newHashMap();
 					// x-dead-letter-exchange  这里声明当前队列绑定的死信交换机
 					arguments.put("x-dead-letter-exchange", rabbitEnum.getExchange());
 					// x-dead-letter-routing-key  这里声明当前队列的死信路由key
 					arguments.put("x-dead-letter-routing-key", rabbitEnum.getRouteKey());
 					Queue queue = new Queue(rabbitEnum.getQueue(), true,false,false, arguments);
-					amqpAdmin.declareBinding(BindingBuilder.bind(queue).to(directExchange).with(rabbitEnum.getQueue()));
+					amqpAdmin.declareBinding(BindingBuilder.bind(queue).to(directExchange).with(rabbitEnum.getQueue()));*/
 				}else {
 					DirectExchange directExchange = new DirectExchange(rabbitEnum.getExchange(), true, false);
 					Queue queue = new Queue(rabbitEnum.getQueue(), true);

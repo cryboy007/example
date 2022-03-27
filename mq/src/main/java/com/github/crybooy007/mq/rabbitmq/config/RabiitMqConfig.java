@@ -111,6 +111,9 @@ public class RabiitMqConfig {
 		factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
 		factory.setConcurrentConsumers(4);  //设置线程数
 		factory.setMaxConcurrentConsumers(4); //最大线程数
+		//设置消息被拒绝时的默认行为，例如因为侦听器抛出异常。当为真时，消息将被重新排队，当为假时，它们不会。对于支持死信的 Rabbit 版本，
+		// 消息不得重新排队以便发送到死信交换。设置为 false 会导致所有拒绝都不会重新排队。当为 true 时，默认值可以被抛
+		//factory.setDefaultRequeueRejected(false);
 		configurer.configure(factory, connectionFactory);
 		return factory;
 	}
@@ -200,8 +203,7 @@ public class RabiitMqConfig {
 					}
 				}
 			});
-			try (Channel channel = connection.createChannel()) {
-
+/*			try (Channel channel = connection.createChannel()) {
 				channel.exchangeDeclare(notifyExchange, "fanout");//// 声明一个交换机
 				// 临时队列
 				//String queueName = channel.queueDeclare().getQueue();
@@ -210,10 +212,11 @@ public class RabiitMqConfig {
 						.getQueue();
 				channel.queueBind(queueName, notifyExchange, "");
 				logger.info(" [*] Waiting for messages. To exit press CTRL+C");
+				//只会初始化bean的时候消费一次
 				FlushCacheConsumer consumer = new FlushCacheConsumer(channel);
 				channel.basicConsume(queueName, true, consumer);
 				return consumer;
-			}
+			}*/
 		} catch (Exception e) {
 			logger.error("创建rabbitMQ消费者时候出现异常了", e);
 		}

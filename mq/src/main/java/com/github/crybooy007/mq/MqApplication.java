@@ -20,7 +20,7 @@ public class MqApplication {
 	@Autowired
 	@Lazy
 	public void contextLoads(MessageProvider messageProvider) throws InterruptedException {
-		messageProvider.onMessage(MqSceneEnum.TEST_ONE,"你好吗");
+		messageProvider.onMessage(MqSceneEnum.TEST_DEAD,"你好吗");
 		new Thread(() -> {
 			try {
 				TimeUnit.SECONDS.sleep(20);

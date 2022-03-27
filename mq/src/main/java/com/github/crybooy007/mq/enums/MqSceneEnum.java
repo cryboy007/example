@@ -12,7 +12,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum MqSceneEnum {
-		TEST_ONE("rabbitMq-测试","direct.test","number.one");
+		TEST_ONE("rabbitMq-测试","direct.test","number.one"),
+		TEST_DEAD("死信队列测试","fanout.business","business.two");
 	;
 	//场景
 	private final String scene;
