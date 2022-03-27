@@ -40,4 +40,18 @@ public class MessageProvider {
 		//rabbitTemplate.convertAndSend(message);
 		rabbitTemplate.send(message);
 	}
+
+	public void onMessage(MqSceneEnum mqSceneEnum,Object obj,Integer delayTime) {
+	/*	String msgStr = JSON.toJSONString(obj);
+		rabbitTemplate.setExchange(mqSceneEnum.getExchange());
+		rabbitTemplate.setRoutingKey(mqSceneEnum.getRoutingKey());
+		Message message = MessageBuilder.withBody(msgStr.getBytes(StandardCharsets.UTF_8))
+				.setDeliveryMode(MessageDeliveryMode.PERSISTENT).build();
+		//rabbitTemplate.convertAndSend(message);
+		rabbitTemplate.send(message);*/
+		rabbitTemplate.convertAndSend(mqSceneEnum.getExchange(), mqSceneEnum.getRoutingKey(), obj, a ->{
+			a.getMessageProperties().setDelay(delayTime);
+			return a;
+		});
+	}
 }

@@ -51,6 +51,8 @@ public class DeclareRabbitModule implements SmartInitializingSingleton {
 				}else {
 					DirectExchange directExchange = new DirectExchange(rabbitEnum.getExchange(), true, false);
 					Queue queue = new Queue(rabbitEnum.getQueue(), true);
+					//使用Builder构造会更优雅
+					//QueueBuilder.durable(rabbitEnum.getQueue()).withArguments().build();
 					amqpAdmin.declareExchange(directExchange);
 					amqpAdmin.declareQueue(queue);
 					amqpAdmin.declareBinding(BindingBuilder.bind(queue).to(directExchange).with(rabbitEnum.getQueue()));

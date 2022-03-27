@@ -54,6 +54,8 @@ public class DeadMqConsumer {
 				value    = @Queue(value = "rabbitmq.number.two", durable = "true",
 									//配置死信队列
 									arguments = {
+											//x-message-ttl：指定消息过期TTL
+											//x-max-length :指定队列的最大长度
 											@Argument(name = "x-dead-letter-exchange",value = "direct.dead"),
 											@Argument(name = "x-dead-letter-routing-key",value = "business.exception"),
 											//绑定关系 可以理解为场景关联

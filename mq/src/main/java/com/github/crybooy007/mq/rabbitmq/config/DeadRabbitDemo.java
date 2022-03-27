@@ -6,6 +6,8 @@ import java.util.Map;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Exchange;
+import org.springframework.amqp.core.ExchangeBuilder;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
@@ -19,9 +21,28 @@ import org.springframework.context.annotation.Lazy;
  *@Author tao.he
  *@Since 2022/3/27 10:32
  */
+@Configuration
 public class DeadRabbitDemo {
 
-		public static final String BUSINESS_EXCHANGE_NAME = "dead.letter.demo.simple.business.exchange";
+		// 创建延时交换机
+		@Bean
+		public Exchange delayExchange(){
+			return ExchangeBuilder.directExchange("delay.exchange").delayed().durable(true).build();
+		}
+
+		// 创建队列
+		@Bean
+		public Queue delayQueue(){
+			return QueueBuilder.durable("delay.queue").build();
+		}
+
+		// 创建延时交换机和队列的绑定关系
+		@Bean
+		public Binding delayBinding(@Qualifier("delayExchange") Exchange exchange, @Qualifier("delayQueue") Queue queue){
+			return BindingBuilder.bind(queue).to(exchange).with("delay").noargs();
+		}
+
+		/*public static final String BUSINESS_EXCHANGE_NAME = "dead.letter.demo.simple.business.exchange";
 		public static final String BUSINESS_QUEUEA_NAME = "dead.letter.demo.simple.business.queuea";
 		public static final String BUSINESS_QUEUEB_NAME = "dead.letter.demo.simple.business.queueb";
 		public static final String DEAD_LETTER_EXCHANGE = "dead.letter.demo.simple.deadletter.exchange";
@@ -102,5 +123,5 @@ public class DeadRabbitDemo {
 		public Binding deadLetterBindingB(@Qualifier("deadLetterQueueB") Queue queue,
 				@Qualifier("deadLetterExchange") DirectExchange exchange){
 			return BindingBuilder.bind(queue).to(exchange).with(DEAD_LETTER_QUEUEB_ROUTING_KEY);
-		}
+		}*/
 }
