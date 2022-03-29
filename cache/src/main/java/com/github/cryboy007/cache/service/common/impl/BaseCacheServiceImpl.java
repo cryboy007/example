@@ -38,7 +38,7 @@ import java.util.function.Function;
  * @Since 2022/3/29 18:20
  */
 @Slf4j
-public abstract class BaseCacheServiceImpl <M extends BaseMapper<T>, T, D, R, Q>
+public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, R, Q>
         extends ServiceImpl<M, T>
         implements IBaseCacheService<T, D, R, Q>, CacheService {
 
@@ -66,8 +66,8 @@ public abstract class BaseCacheServiceImpl <M extends BaseMapper<T>, T, D, R, Q>
         if (params.length == 0) {
             log.error("继承BaseDao及BaseDaoImpl时必须添加泛型！！");
         }
-        //存放数据
-        cache.put(params[0].getClass(),this.getData());
+        //存放数据 不是代理对象,getData() 为空
+        //cache.put(params[0].getClass(),this.getData());
     }
 
 

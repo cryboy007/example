@@ -12,7 +12,6 @@ import javax.annotation.PostConstruct;
  * @Since 2022/3/29 17:37
  */
 @SpringBootApplication
-@MapperScan({"com.github.cryboy007.cache.service.dao","com.github.cryboy007.cache.service.cache","com.github.cryboy007.cache.service.common"})
 public class CacheApplication {
     public static void main(String[] args) {
         SpringApplication.run(CacheApplication.class,args);

@@ -2,7 +2,7 @@ package com.github.crybooy007.mq.rabbitmq.consumer;
 
 import java.io.IOException;
 
-import com.github.cryboy007.cmmon.utils.SpringContextUtil;
+import com.github.cryboy007.utils.SpringContextUtil;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Consumer;

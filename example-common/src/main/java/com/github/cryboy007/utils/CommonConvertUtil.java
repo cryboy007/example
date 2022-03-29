@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import org.springframework.beans.BeanUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.BiConsumer;
 
@@ -22,16 +23,22 @@ import java.util.function.BiConsumer;
 @ToString
 public class CommonConvertUtil {
 
-    @SneakyThrows
     public static <S, T> T convertTo(S s, Class<T> clazz, BiConsumer<S, T> consumer) {
         if (Objects.isNull(s)) {
             return null;
         }
 
-        T t = clazz.getConstructor().newInstance();
+        T t = null;
+        try {
+            t = clazz.getConstructor().newInstance();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         BeanUtils.copyProperties(s, t);
 
-        Optional.ofNullable(consumer).ifPresent(stBiConsumer -> stBiConsumer.accept(s, t));
+        T finalT = t;
+        Optional.ofNullable(consumer).ifPresent(stBiConsumer -> stBiConsumer.accept(s, finalT));
         return t;
 
     }

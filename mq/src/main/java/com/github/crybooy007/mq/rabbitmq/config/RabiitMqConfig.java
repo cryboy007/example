@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.crybooy007.mq.rabbitmq.consumer.FlushCacheConsumer;
-import com.github.cryboy007.cmmon.utils.SpringContextUtil;
 import com.google.common.collect.Maps;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Address;
