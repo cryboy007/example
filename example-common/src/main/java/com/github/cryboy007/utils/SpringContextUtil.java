@@ -1,4 +1,4 @@
-package com.github.cryboy007.cmmon.utils;
+package com.github.cryboy007.utils;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
