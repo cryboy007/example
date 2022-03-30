@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: web-example
+  profiles:
+    active: "@build.profile.id@"
