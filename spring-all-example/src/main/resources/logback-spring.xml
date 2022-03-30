@@ -76,10 +76,29 @@
         <appender-ref ref="CONSUME-LOG-FILE"/>
     </appender>
 
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="COMMON-LOG-ASYNC"/>
+            <appender-ref ref="DEFAULT-CONSOLE"/>
+            <appender-ref ref="CONSUME-LOG-ASYNC"/>
+        </root>
+    </springProfile>
 
-    <root level="INFO">
-        <appender-ref ref="COMMON-LOG-ASYNC"/>
-        <appender-ref ref="DEFAULT-CONSOLE"/>
-        <appender-ref ref="CONSUME-LOG-ASYNC"/>
-    </root>
+    <springProfile name="uat">
+        <root level="INFO">
+            <appender-ref ref="COMMON-LOG-ASYNC"/>
+            <appender-ref ref="DEFAULT-CONSOLE"/>
+            <appender-ref ref="CONSUME-LOG-ASYNC"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="COMMON-LOG-ASYNC"/>
+            <appender-ref ref="DEFAULT-CONSOLE"/>
+            <appender-ref ref="CONSUME-LOG-ASYNC"/>
+        </root>
+    </springProfile>
+
+
 </configuration>
