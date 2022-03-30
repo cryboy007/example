@@ -2,10 +2,14 @@ package com.github.cryboy007.config;
 
 import com.github.cryboy007.interceptior.CustomAsyncHandlerInterceptor;
 import com.github.cryboy007.interceptior.CustomDeferredResultProcessingInterceptor;
+import com.github.cryboy007.resolver.MyArgumentResolver;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 /**
  * @ClassName WebConfi
@@ -27,4 +31,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new CustomAsyncHandlerInterceptor()).addPathPatterns("/**");
     }
+
+    //使用BeanPostProcessor 注入试试
+   /* @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new MyArgumentResolver());
+    }*/
 }
