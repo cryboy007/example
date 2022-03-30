@@ -2,10 +2,14 @@ package com.github.cryboy007.controller.ws;
 
 import com.alibaba.fastjson.JSON;
 import com.github.cryboy007.constant.RedisConstant;
+import com.github.cryboy007.model.Book;
 import com.github.cryboy007.to.MessageTo;
 import com.github.cryboy007.websocket.AbstractWebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
+import org.springframework.data.redis.connection.stream.ObjectRecord;
+import org.springframework.data.redis.connection.stream.Record;
+import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
