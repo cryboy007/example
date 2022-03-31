@@ -1,9 +1,6 @@
 package com.github.cryboy007.cache.service.cache;
 
-import com.github.cryboy007.cache.model.Person;
-import com.github.cryboy007.cache.model.PersonReq;
-import com.github.cryboy007.cache.model.PersonReqQuery;
-import com.github.cryboy007.cache.model.PersonResp;
+import com.github.cryboy007.cache.model.*;
 import com.github.cryboy007.cache.service.PersonService;
 import com.github.cryboy007.cache.service.common.E3Function;
 import com.github.cryboy007.cache.service.common.QueryConditionBuilder;
@@ -37,7 +34,7 @@ public class PersonCache extends BaseCacheServiceImpl<PersonDao, Person, PersonR
     @Override
     protected void setQueryConditions(QueryConditionBuilder<PersonReqQuery, Person> builder) {
         builder.singleLikeMultiIn(PersonReqQuery::getName, Person::getName)
-                .eq(PersonReqQuery::getId, Person::getId);
+                .exists(Person.class, Person::getName,Person::getName,PersonReqQuery::getName,Person::getName);
     }
 
     /**
@@ -48,4 +45,9 @@ public class PersonCache extends BaseCacheServiceImpl<PersonDao, Person, PersonR
      *         cache.put(this.getClass(), getData());
      *     }
      */
+    @PostConstruct
+    public void initCache() {
+              //存放数据
+          cache.put(this.getClass(), getData());
+    }
 }

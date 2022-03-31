@@ -1,4 +1,4 @@
-package com.github.cryboy007.model;
+package com.github.cryboy007.cache.model;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;

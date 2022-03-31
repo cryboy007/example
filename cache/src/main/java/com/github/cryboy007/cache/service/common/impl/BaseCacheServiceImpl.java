@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.cryboy007.cache.model.Person;
 import com.github.cryboy007.cache.service.CacheService;
 import com.github.cryboy007.cache.service.cache.MyCacheLoader;
 import com.github.cryboy007.cache.service.common.BaseCacheMapper;
