@@ -5,16 +5,11 @@ import com.github.cryboy007.cache.service.PersonService;
 import com.github.cryboy007.cache.service.annotation.Cache;
 import com.github.cryboy007.cache.service.common.E3Function;
 import com.github.cryboy007.cache.service.common.QueryConditionBuilder;
-import com.github.cryboy007.cache.service.common.impl.BaseCacheServiceImpl;
+import com.github.cryboy007.cache.service.cache.impl.BaseCacheServiceImpl;
 import com.github.cryboy007.cache.service.dao.PersonDao;
-import org.apache.ibatis.annotations.Mapper;
+import com.google.common.cache.LoadingCache;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 

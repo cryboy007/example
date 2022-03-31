@@ -1,19 +1,13 @@
-package com.github.cryboy007.cache.service.common.impl;
+package com.github.cryboy007.cache.service.cache.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.util.TypeUtils;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.cryboy007.cache.model.Person;
 import com.github.cryboy007.cache.service.CacheService;
 import com.github.cryboy007.cache.service.annotation.Cache;
-import com.github.cryboy007.cache.service.cache.MyCacheLoader;
-import com.github.cryboy007.cache.service.common.BaseCacheMapper;
 import com.github.cryboy007.cache.service.common.E3Function;
 import com.github.cryboy007.cache.service.common.IBaseCacheService;
 import com.github.cryboy007.cache.service.common.QueryConditionBuilder;
@@ -22,20 +16,17 @@ import com.github.cryboy007.exception.BizException;
 import com.github.cryboy007.utils.CommonConvertUtil;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Sets;
 import com.sun.istack.internal.NotNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
  * @ClassName BaseCacheServiceImpl
@@ -43,7 +34,7 @@ import java.util.function.Function;
  * @Since 2022/3/29 18:20
  */
 @Slf4j
-public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, R, Q>
+public abstract class BaseCacheServiceImpl <M extends BaseMapper<T>, T, D, R, Q>
         extends ServiceImpl<M, T>
         implements IBaseCacheService<T, D, R, Q>, CacheService {
 
@@ -54,27 +45,23 @@ public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, 
 
     protected boolean isUseCache = false;
 
-    public static LoadingCache<String,String> cache;
+    public  LoadingCache<String,List<T>> cache;
+
+    @Autowired
+    public void setBean(LoadingCache cache) {
+        this.cache = cache;
+    }
 
     public BaseCacheServiceImpl useCache(boolean isUseCache) {
         this.isUseCache = isUseCache;
         return this;
     }
 
-
+    @Autowired
     protected BaseCacheServiceImpl() {
         Type[] actualTypeArguments = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments();
         this.entityClass = (Class<T>) actualTypeArguments[1];
         this.rClass = (Class<R>) actualTypeArguments[3];
-        if (cache == null) {
-            // LoadingCache是Cache的缓存实现
-            cache = CacheBuilder.newBuilder()
-                    .maximumSize(1000)
-                    .expireAfterWrite(10, TimeUnit.MINUTES)
-                    .refreshAfterWrite(2, TimeUnit.MINUTES)
-                    .recordStats()
-                    .build(new MyCacheLoader());
-        }
         boolean isCache = this.getClass().isAnnotationPresent(Cache.class);
         // 获取泛型参数T的class
         Type genType = this.getClass().getGenericSuperclass();
@@ -87,7 +74,6 @@ public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, 
             Cache cache = this.getClass().getAnnotation(Cache.class);
             baseMapperClass = (Class<? extends BaseCacheServiceImpl>) cache.value();
         }
-
         //存放数据 不是代理对象,getData() 为空
         //cache.put(params[0].getClass(),this.getData());
     }
@@ -100,8 +86,8 @@ public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, 
         cache.refresh(key);
     }
 
-    public String getData() {
-        return JSONObject.toJSONString(list());
+    public List<T> getData() {
+        return list();
     };
 
     @Override
@@ -237,8 +223,8 @@ public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, 
 
     @SneakyThrows
     private List<T> getCache() {
-        String s = cache.get(this.baseMapperClass.getName());
-        return JSON.parseArray(s, entityClass);
+        return cache.get(this.baseMapperClass.getName());
+        //return JSON.parseArray(s, entityClass);
     }
 
 }

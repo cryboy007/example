@@ -25,3 +25,6 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     #下划线转驼峰
     map-underscore-to-camel-case: false
+cache:
+  guava:
+    enable: true

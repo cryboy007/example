@@ -34,4 +34,10 @@ public class CacheController {
         personCache.delete(ids);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("cacheTwo")
+    public ResponseEntity<List> cacheTwo(@RequestParam(value = "useCache",required = false) boolean useCache) {
+        PersonReqQuery query = new PersonReqQuery();
+        return ResponseEntity.ok(personCache.useCache(useCache).find(null));
+    }
 }
