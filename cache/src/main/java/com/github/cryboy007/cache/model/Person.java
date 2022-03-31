@@ -1,9 +1,12 @@
 package com.github.cryboy007.cache.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @ClassName Person
@@ -12,8 +15,10 @@ import lombok.Data;
  */
 @Data
 @TableName("person")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Person {
-    @TableId
+    @TableId(type = IdType.INPUT)
     private Long id;
 
     @TableField("name")

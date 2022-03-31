@@ -9,7 +9,9 @@ public enum BizCode implements ICode {
 	INVALID_SQL("400001","SQL 语法异常"),
 	SERVER_ERROR("5000000","系统异常"),SERVER_REMOTE_ERROR("6000001","远程业务系统异常"),
 	IDEMPONT_INVALID("600000","无效的幂等态"),
-	IDEMPONT_PASS("600001","幂等记录已存在");
+	IDEMPONT_PASS("600001","幂等记录已存在"),
+	MULTIPLE_RECORDS("700001","One record is expected, but the query result is multiple records"),
+	;
 	
 	
 	private String code;

@@ -1,6 +1,7 @@
 package com.github.cryboy007.cache.service.common;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.cryboy007.cache.service.PersonService;
 
 import java.util.Collection;
 import java.util.List;
@@ -15,6 +16,9 @@ import java.util.Set;
 public interface IBaseCacheService<T, D, R, Q> extends IService<T> {
     String ASSERTION_ERROR = "不支持方法!";
 
+    default IBaseCacheService useCache(boolean useCache) {
+        return this;
+    }
 
     default List<R> query(Q req) {
         throw new AssertionError(ASSERTION_ERROR);

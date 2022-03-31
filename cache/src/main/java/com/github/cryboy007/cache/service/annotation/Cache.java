@@ -1,6 +1,6 @@
 package com.github.cryboy007.cache.service.annotation;
 
-import com.github.cryboy007.cache.service.cache.impl.BaseCacheServiceImpl;
+import com.github.cryboy007.cache.service.common.impl.BaseCacheServiceImpl;
 
 import java.lang.annotation.*;
 
