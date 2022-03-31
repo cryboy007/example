@@ -10,5 +10,5 @@ import java.util.List;
 public interface CacheService<T> {
     void refresh (String key);
 
-    List<T> getData ();
+    String getData ();
 }

@@ -1,5 +1,7 @@
 package com.github.cryboy007.cache.service.common.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -9,6 +11,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.cryboy007.cache.model.Person;
 import com.github.cryboy007.cache.service.CacheService;
+import com.github.cryboy007.cache.service.annotation.Cache;
 import com.github.cryboy007.cache.service.cache.MyCacheLoader;
 import com.github.cryboy007.cache.service.common.BaseCacheMapper;
 import com.github.cryboy007.cache.service.common.E3Function;
@@ -21,6 +24,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Sets;
 import com.sun.istack.internal.NotNull;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,27 +50,44 @@ public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, 
     protected final Class<T> entityClass;
     protected final Class<R> rClass;
 
-    public static LoadingCache cache;
+    protected  Class<? extends BaseCacheServiceImpl> baseMapperClass = null;
+
+    protected boolean isUseCache = false;
+
+    public static LoadingCache<String,String> cache;
+
+    public BaseCacheServiceImpl useCache(boolean isUseCache) {
+        this.isUseCache = isUseCache;
+        return this;
+    }
 
 
     protected BaseCacheServiceImpl() {
         Type[] actualTypeArguments = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments();
         this.entityClass = (Class<T>) actualTypeArguments[1];
         this.rClass = (Class<R>) actualTypeArguments[3];
-
-        // LoadingCache是Cache的缓存实现
-        cache = CacheBuilder.newBuilder()
-                .maximumSize(1000)
-                .expireAfterWrite(10, TimeUnit.MINUTES)
-                .refreshAfterWrite(2, TimeUnit.MINUTES)
-                .recordStats()
-                .build(new MyCacheLoader());
+        if (cache == null) {
+            // LoadingCache是Cache的缓存实现
+            cache = CacheBuilder.newBuilder()
+                    .maximumSize(1000)
+                    .expireAfterWrite(10, TimeUnit.MINUTES)
+                    .refreshAfterWrite(2, TimeUnit.MINUTES)
+                    .recordStats()
+                    .build(new MyCacheLoader());
+        }
+        boolean isCache = this.getClass().isAnnotationPresent(Cache.class);
         // 获取泛型参数T的class
         Type genType = this.getClass().getGenericSuperclass();
         Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
         if (params.length == 0) {
             log.error("继承BaseDao及BaseDaoImpl时必须添加泛型！！");
         }
+        if (isCache) {
+            isUseCache = true;
+            Cache cache = this.getClass().getAnnotation(Cache.class);
+            baseMapperClass = (Class<? extends BaseCacheServiceImpl>) cache.value();
+        }
+
         //存放数据 不是代理对象,getData() 为空
         //cache.put(params[0].getClass(),this.getData());
     }
@@ -75,24 +96,24 @@ public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, 
 
     @Override
     public void refresh(String key) {
+        //todo 如果是分布式项目 则需要通过mq的方式通知刷新消费
         cache.refresh(key);
     }
 
-    public List<T> getData() {
-        return list();
+    public String getData() {
+        return JSONObject.toJSONString(list());
     };
 
     @Override
     public List<T> find(Q req) {
         QueryConditionBuilder<Q, T> builder = getQueryConditionBuilder(req);
-        return builder.buildList();
+        return isUseCache ? getCache() : builder.buildList() ;
     }
 
     @Override
     public R get(Q req) {
         QueryConditionBuilder<Q, T> builder = getQueryConditionBuilder(req);
-        R r = builder.buildOne(rClass);
-        return r;
+        return isUseCache ? CommonConvertUtil.convertTo(getCache().get(0),rClass) : builder.buildOne(rClass);
     }
 
     @Override
@@ -100,9 +121,7 @@ public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, 
         if (Objects.isNull(id)) {
             return null;
         }
-
-        R r = CommonConvertUtil.convertTo(super.getById(id), rClass);
-        return r;
+        return isUseCache ? CommonConvertUtil.convertTo(getCache().get(0),rClass) : CommonConvertUtil.convertTo(super.getById(id), rClass);
     }
 
     @Override
@@ -112,6 +131,9 @@ public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, 
             throw new BizException(BizCode.INVALID_ARGS);
         }
         this.removeByIds(ids);
+        if (baseMapperClass != null) {
+            this.refresh(this.baseMapperClass.getName());
+        }
     }
 
 
@@ -122,6 +144,9 @@ public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, 
             throw new BizException(BizCode.INVALID_ARGS);
         }
         super.lambdaUpdate().in(this.getBillIdFun(), billIds).remove();
+        if (baseMapperClass != null) {
+            this.refresh(this.baseMapperClass.getName());
+        }
     }
 
     @Override
@@ -139,7 +164,11 @@ public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, 
             throw new BizException(BizCode.INVALID_ARGS);
         }
         this.processSaveAndUpdateData(entityList);
-        return super.saveBatch(entityList);
+        boolean success = super.saveBatch(entityList);
+        if (baseMapperClass != null) {
+            this.refresh(this.baseMapperClass.getName());
+        }
+        return success;
     }
 
 
@@ -149,7 +178,11 @@ public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, 
             throw new BizException(BizCode.INVALID_ARGS);
         }
         this.processSaveAndUpdateData(entityList);
-        return super.updateBatchById(entityList);
+        boolean success = super.updateBatchById(entityList);
+        if (baseMapperClass != null) {
+            this.refresh(this.baseMapperClass.getName());
+        }
+        return success;
     }
 
 
@@ -160,7 +193,11 @@ public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, 
             throw new BizException(BizCode.INVALID_ARGS);
         }
         this.processSaveAndUpdateData(entityList);
-        return super.saveOrUpdateBatch(entityList);
+        boolean success = super.saveOrUpdateBatch(entityList);
+        if (baseMapperClass != null) {
+            this.refresh(this.baseMapperClass.getName());
+        }
+        return success;
     }
 
     @NotNull
@@ -197,5 +234,11 @@ public abstract class BaseCacheServiceImpl <M extends BaseCacheMapper<T>, T, D, 
         return (P) AopContext.currentProxy();
     }
 
+
+    @SneakyThrows
+    private List<T> getCache() {
+        String s = cache.get(this.baseMapperClass.getName());
+        return JSON.parseArray(s, entityClass);
+    }
 
 }

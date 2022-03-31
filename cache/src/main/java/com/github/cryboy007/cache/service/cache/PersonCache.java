@@ -2,6 +2,7 @@ package com.github.cryboy007.cache.service.cache;
 
 import com.github.cryboy007.cache.model.*;
 import com.github.cryboy007.cache.service.PersonService;
+import com.github.cryboy007.cache.service.annotation.Cache;
 import com.github.cryboy007.cache.service.common.E3Function;
 import com.github.cryboy007.cache.service.common.QueryConditionBuilder;
 import com.github.cryboy007.cache.service.common.impl.BaseCacheServiceImpl;
@@ -23,6 +24,7 @@ import javax.annotation.PostConstruct;
  * @Since 2022/3/29 17:05
  */
 @Service
+@Cache(PersonCache.class)
 public class PersonCache extends BaseCacheServiceImpl<PersonDao, Person, PersonReq, PersonResp, PersonReqQuery>
         implements PersonService {
 
@@ -48,6 +50,6 @@ public class PersonCache extends BaseCacheServiceImpl<PersonDao, Person, PersonR
     @PostConstruct
     public void initCache() {
               //存放数据
-          cache.put(this.getClass(), getData());
+          cache.put(PersonCache.class.getName(), getData());
     }
 }
