@@ -3,12 +3,12 @@ package com.github.cryboy007.cache.service.common;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.enums.SqlKeyword;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.core.toolkit.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.sql.SqlScriptUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.baomidou.mybatisplus.extension.service.additional.query.impl.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.github.cryboy007.exception.BizCode;
 import com.github.cryboy007.exception.BizException;
 import com.github.cryboy007.utils.CollectionUtil;
@@ -121,7 +121,7 @@ public class QueryConditionBuilder<R, T> {
     }
 
     public <V> QueryConditionBuilder<R, T> orderByDesc(SFunction<T, V>... getOrderFields) {
-        this.queryChainWrapper.orderByDesc(getOrderFields);
+        this.queryChainWrapper.orderByDesc(Arrays.asList(getOrderFields));
         return this;
     }
 
@@ -131,7 +131,7 @@ public class QueryConditionBuilder<R, T> {
     }
 
     public <V> QueryConditionBuilder<R, T> orderByAsc(SFunction<T, V>... getOrderFields) {
-        this.queryChainWrapper.orderByAsc(getOrderFields);
+        this.queryChainWrapper.orderByAsc(Arrays.asList(getOrderFields));
         return this;
     }
 
