@@ -5,10 +5,13 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.enums.SqlKeyword;
+import com.baomidou.mybatisplus.core.enums.SqlLike;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.sql.SqlUtils;
 import com.github.cryboy007.exception.BizCode;
 import com.github.cryboy007.exception.BizException;
 import com.github.cryboy007.utils.CommonConvertUtil;
@@ -139,8 +142,39 @@ public class CacheConditionBuilder<R, T extends CommonQuery> {
                 case IN: {
                     String column = condition.getColumn().getColumn();
                     List<String> qtyValue = (ArrayList<String>)Optional.ofNullable(condition.getValue()).orElse(new ArrayList<>());
-                    //String boValue = Optional.ofNullable(Reflect.on(bo).field(column).get()).orElse("").toString();
                     listPredicate.add(t -> qtyValue.contains(t.getValue(t,column)));
+                    break;
+                }
+                case NOT_IN: {
+                    String column = condition.getColumn().getColumn();
+                    List<String> qtyValue = (ArrayList<String>)Optional.ofNullable(condition.getValue()).orElse(new ArrayList<>());
+                    listPredicate.add(t -> qtyValue.contains(t.getValue(t,column)));
+                    break;
+                }
+                case GE:
+                case LE:
+                case GT:
+                case LT:
+                    throw new BizException("99999","暂不支持缓存查询中使用表达式" + condition.getType() + "，请联系ht增加功能");
+                case LIKE: {
+                    String value = Optional.ofNullable(condition.getValue()).orElse("").toString();
+                    String column = condition.getColumn().getColumn();
+                    String defaultValue = SqlUtils.concatLike(value, SqlLike.DEFAULT);
+                    // 所有正则特殊符号进行转义 ^$*.|()\
+                    String qtyValue = defaultValue.replaceAll("[\\^$*+?.|()\\\\]", "[$0]")
+                            .replaceAll("%", ".*")
+                            .replaceAll("_", ".");
+                    Pattern pattern = Pattern.compile(qtyValue);
+                    listPredicate.add(t -> pattern.matcher(t.getValue(t,column)).matches());
+                    break;
+                }
+                case NOT_LIKE: {
+                    String value = Optional.ofNullable(condition.getValue()).orElse("").toString();
+                    String column = condition.getColumn().getColumn();
+                    String defaultValue = SqlUtils.concatLike(value, SqlLike.DEFAULT);
+                    String qtyValue = defaultValue.replaceAll("%", ".*").replaceAll("_", ".");
+                    Pattern pattern = Pattern.compile(qtyValue);
+                    listPredicate.add(t -> !pattern.matcher(t.getValue(t,column)).matches());
                     break;
                 }
             }

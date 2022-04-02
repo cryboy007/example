@@ -102,8 +102,6 @@ public abstract class BaseCacheServiceImpl <M extends BaseMapper<T>, T extends C
             return null;
         }
         CacheConditionBuilder<Q, T> builder = new CacheConditionBuilder<>(cacheData(),entityClass);
-        //builder.getById(id);
-        //cacheData().stream().forEach(item ->);
         return isUseCache ? CommonConvertUtil.convertTo(builder.getById(id),rClass) : CommonConvertUtil.convertTo(super.getById(id), rClass);
     }
 
@@ -120,25 +118,7 @@ public abstract class BaseCacheServiceImpl <M extends BaseMapper<T>, T extends C
     }
 
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteByBillIds(Set<Long> billIds) {
-        if (CollectionUtils.isEmpty(billIds) || Objects.isNull(this.getBillIdFun())) {
-            throw new BizException(BizCode.INVALID_ARGS);
-        }
-        super.lambdaUpdate().in(this.getBillIdFun(), billIds).remove();
-        if (baseMapperClass != null) {
-            this.refresh(this.baseMapperClass.getName());
-        }
-    }
 
-    @Override
-    public List<T> findByBillId(Long billId) {
-        if (Objects.isNull(billId) || Objects.isNull(this.getBillIdFun())) {
-            return Collections.emptyList();
-        }
-        return super.lambdaQuery().in(this.getBillIdFun(), billId).list();
-    }
 
 
     @Override
@@ -206,10 +186,6 @@ public abstract class BaseCacheServiceImpl <M extends BaseMapper<T>, T extends C
 
     protected abstract E3Function<T, Long> getIdFun();
 
-
-    protected E3Function<T, Long> getBillIdFun() {
-        return null;
-    }
 
     protected void processSaveAndUpdateData(Collection<T> entityList) {
     }

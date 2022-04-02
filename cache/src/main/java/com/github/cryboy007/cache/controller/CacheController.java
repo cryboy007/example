@@ -11,6 +11,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ import java.util.stream.Stream;
  */
 @RestController
 @RequiredArgsConstructor
+@EnableAsync
+@EnableScheduling
 public class CacheController {
     private final PersonService personCache;
 
@@ -76,7 +80,8 @@ public class CacheController {
     @PostMapping("list")
     public ResponseEntity<List> list(@RequestBody List<Long> ids,@RequestParam("useCache") boolean useCache) {
         PersonReqQuery query = new PersonReqQuery();
-        query.setName("张三,李武");
+        //query.setName("张三,李武");
+        query.setName("张");
         return ResponseEntity.ok(personCache.useCache(useCache).find(query));
     }
 }

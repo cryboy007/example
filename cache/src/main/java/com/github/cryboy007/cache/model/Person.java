@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joor.Reflect;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,5 +28,9 @@ public class Person implements CommonQuery {
 
     @TableField("name")
     private String name;
+
+
+    @TableField(exist = false)
+    private List<Long> ids;
 
 }

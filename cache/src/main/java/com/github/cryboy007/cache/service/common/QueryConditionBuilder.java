@@ -246,6 +246,32 @@ public class QueryConditionBuilder<R, T> {
         return this;
     }
 
+
+    public QueryConditionBuilder<R, T> notLike(Function<R, String> getValFun, E3Function<T, String> getQueryField) {
+        Optional.ofNullable(this.r).map(getValFun).filter(StringUtils::isNotEmpty).ifPresent(queryVal -> {
+            String[] valAry = getSingleLikeMultiIn(queryVal);
+            if (valAry.length > 1) {
+                this.conditions.add(new Condition(SqlKeyword.NOT_IN, getQueryField, Lists.newArrayList(valAry)));
+            } else {
+                this.conditions.add(new Condition(SqlKeyword.NOT_LIKE, getQueryField, queryVal));
+            }
+        });
+        return this;
+    }
+
+    public <V> QueryConditionBuilder<R, T> notIn(Function<R, Collection<V>> getValFun, E3Function<T, V> getQueryField) {
+        Optional.ofNullable(this.r).map(getValFun).filter(CollectionUtils::isNotEmpty).ifPresent(queryVal -> {
+            if (queryVal.size() == 1) {
+                queryVal.stream().filter(Objects::nonNull).findFirst().ifPresent(val -> this.conditions.add(new Condition(SqlKeyword.NE, getQueryField, val)));
+            } else {
+                this.conditions.add(new Condition(SqlKeyword.NOT_IN, getQueryField, queryVal));
+            }
+        });
+        return this;
+    }
+
+
+
     public <C, V> QueryConditionBuilder<R, T> exists(Class<C> clazz,
                                                      E3Function<C, V> getAssociatedQueryFieldA,
                                                      E3Function<T, V> getAssociatedQueryFieldB,
@@ -313,6 +339,10 @@ public class QueryConditionBuilder<R, T> {
                     this.queryWrapper.le(condition.getColumn(), condition.getValue());
                 } else if (SqlKeyword.GE.equals(condition.getType())) {
                     this.queryWrapper.ge(condition.getColumn(), condition.getValue());
+                } else if (SqlKeyword.NOT_IN.equals(condition.getType())) {
+                    this.queryWrapper.notIn(condition.getColumn(), condition.getValue());
+                } else if (SqlKeyword.NOT_LIKE.equals(condition.getType())) {
+                    this.queryWrapper.notLike(condition.getColumn(), condition.getValue());
                 }
             });
         }
