@@ -15,6 +15,7 @@ import com.github.cryboy007.utils.CommonConvertUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.joor.Reflect;
+import org.springframework.util.StopWatch;
 
 /**
  * <p>
@@ -109,16 +110,17 @@ public class CacheConditionBuilder<R, T extends CommonQuery> {
 
     public void setCondition() {
         if (CollectionUtils.isNotEmpty(conditions)) {
-            /*this.cacheData = this.cacheData.stream().filter(bo -> {
-                AtomicBoolean flag = new AtomicBoolean(true);
-                buildCondition(bo, flag);
-                return flag.get();
-            }).collect(Collectors.toList());*/
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start("buildCondition");
             List<Predicate<T>> predicates = this.buildCondition();
+            stopWatch.stop();
             if (!CollectionUtils.isEmpty(predicates)) {
                 Predicate<T> predicate = predicates.stream().reduce(Predicate::and).get();
+                stopWatch.start("stream-filter");
                 this.cacheData = this.cacheData.stream().filter(predicate).collect(Collectors.toList());
+                stopWatch.stop();
             }
+            System.out.println(stopWatch.prettyPrint());
         }
     }
 
