@@ -72,4 +72,11 @@ public class CacheController {
         partition.forEach(personCache::saveBatch);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("list")
+    public ResponseEntity<List> list(@RequestBody List<Long> ids,@RequestParam("useCache") boolean useCache) {
+        PersonReqQuery query = new PersonReqQuery();
+        query.setName("张三,李武");
+        return ResponseEntity.ok(personCache.useCache(useCache).find(query));
+    }
 }

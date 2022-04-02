@@ -4,14 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.cryboy007.cache.model.Person;
-import com.github.cryboy007.cache.model.PersonReqQuery;
 import com.github.cryboy007.cache.service.CacheService;
 import com.github.cryboy007.cache.service.annotation.Cache;
-import com.github.cryboy007.cache.service.common.CacheConditionBuilder;
-import com.github.cryboy007.cache.service.common.E3Function;
-import com.github.cryboy007.cache.service.common.IBaseCacheService;
-import com.github.cryboy007.cache.service.common.QueryConditionBuilder;
+import com.github.cryboy007.cache.service.common.*;
 import com.github.cryboy007.exception.BizCode;
 import com.github.cryboy007.exception.BizException;
 import com.github.cryboy007.utils.CommonConvertUtil;
@@ -23,13 +18,9 @@ import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * @ClassName BaseCacheServiceImpl
@@ -37,7 +28,7 @@ import java.util.function.Predicate;
  * @Since 2022/3/29 18:20
  */
 @Slf4j
-public abstract class BaseCacheServiceImpl <M extends BaseMapper<T>, T, D, R, Q>
+public abstract class BaseCacheServiceImpl <M extends BaseMapper<T>, T extends CommonQuery, D, R, Q>
         extends ServiceImpl<M, T>
         implements IBaseCacheService<T, D, R, Q>, CacheService<T> {
 
@@ -96,13 +87,13 @@ public abstract class BaseCacheServiceImpl <M extends BaseMapper<T>, T, D, R, Q>
     @Override
     public List<T> find(Q req) {
         QueryConditionBuilder<Q, T> builder = getQueryConditionBuilder(req);
-        return isUseCache ? req == null ? cacheData() : getCacheConditionBuilder(req).buildList() : builder.buildList() ;
+        return isUseCache ? req == null ? cacheData() : getCacheConditionBuilder(req,builder.getConditions()).buildList() : builder.buildList() ;
     }
 
     @Override
     public R get(Q req) {
         QueryConditionBuilder<Q, T> builder = getQueryConditionBuilder(req);
-        return isUseCache ? getCacheConditionBuilder(req).buildOne(rClass) : builder.buildOne(rClass);
+        return isUseCache ? getCacheConditionBuilder(req, builder.getConditions()).buildOne(rClass) : builder.buildOne(rClass);
     }
 
     @Override
@@ -200,9 +191,9 @@ public abstract class BaseCacheServiceImpl <M extends BaseMapper<T>, T, D, R, Q>
     }
 
     @NotNull
-    protected CacheConditionBuilder<Q, T> getCacheConditionBuilder(Q req) {
-        CacheConditionBuilder<Q, T> builder = new CacheConditionBuilder<>(cacheData(), req);
-        this.setCacheConditions(builder);
+    protected CacheConditionBuilder<Q, T> getCacheConditionBuilder(Q req, Set<Condition> conditions) {
+        CacheConditionBuilder<Q, T> builder = new CacheConditionBuilder<>(cacheData(),entityClass,conditions);
+        builder.setCondition();
         return builder;
     }
 
@@ -211,7 +202,6 @@ public abstract class BaseCacheServiceImpl <M extends BaseMapper<T>, T, D, R, Q>
         return cache.get(this.baseMapperClass.getName());
     }
 
-    protected abstract void setIdCacheCondition(CacheConditionBuilder<Q,T> builder);
 
 
     protected abstract E3Function<T, Long> getIdFun();
@@ -233,7 +223,6 @@ public abstract class BaseCacheServiceImpl <M extends BaseMapper<T>, T, D, R, Q>
 
     protected abstract void setQueryConditions(QueryConditionBuilder<Q, T> builder);
 
-    protected abstract void setCacheConditions(CacheConditionBuilder<Q,T> builder);
     /**
      * 获取当前代理对象
      */

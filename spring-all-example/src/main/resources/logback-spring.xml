@@ -13,7 +13,7 @@
         </encoder>
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator class="ch.qos.logback.classic.boolex.JaninoEventEvaluator">
-                <expression>!logger.contains("consumeLog")</expression>
+                <expression>return !logger.contains("excelLog");</expression>
             </evaluator>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
@@ -33,7 +33,7 @@
         </encoder>
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator class="ch.qos.logback.classic.boolex.JaninoEventEvaluator">
-                <expression>!logger.contains("consumeLog")</expression>
+                <expression>return !logger.contains("excelLog");</expression>
             </evaluator>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
@@ -46,13 +46,12 @@
     </appender>
 
 
-
-    <appender name="CONSUME-LOG-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="EXCEL-LOG-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 文件路径 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- 文件名称 -->
             <fileNamePattern>
-                ${FILE_PATH}/consume/consume-log-%d{yyyy-MM-dd}.%i.log
+                ${FILE_PATH}/excel/excel-log-%d{yyyy-MM-dd}.%i.log
             </fileNamePattern>
             <!-- 文件最大保存历史数量 -->
             <MaxHistory>10</MaxHistory>
@@ -64,23 +63,24 @@
         </layout>
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator class="ch.qos.logback.classic.boolex.JaninoEventEvaluator">
-                <expression>logger.contains("consumeLog")</expression>
+                <expression>return logger.contains("excelLog");</expression>
             </evaluator>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
-    <appender name="CONSUME-LOG-ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+
+    <appender name="EXCEL-LOG-ASYNC" class="ch.qos.logback.classic.AsyncAppender">
         <discardingThreshold>0</discardingThreshold>
         <queueSize>256</queueSize>
-        <appender-ref ref="CONSUME-LOG-FILE"/>
+        <appender-ref ref="EXCEL-LOG-FILE"/>
     </appender>
 
     <springProfile name="dev">
         <root level="INFO">
             <appender-ref ref="COMMON-LOG-ASYNC"/>
             <appender-ref ref="DEFAULT-CONSOLE"/>
-            <appender-ref ref="CONSUME-LOG-ASYNC"/>
+            <appender-ref ref="EXCEL-LOG-ASYNC"/>
         </root>
     </springProfile>
 
@@ -88,7 +88,7 @@
         <root level="INFO">
             <appender-ref ref="COMMON-LOG-ASYNC"/>
             <appender-ref ref="DEFAULT-CONSOLE"/>
-            <appender-ref ref="CONSUME-LOG-ASYNC"/>
+            <appender-ref ref="EXCEL-LOG-ASYNC"/>
         </root>
     </springProfile>
 
@@ -96,7 +96,7 @@
         <root level="INFO">
             <appender-ref ref="COMMON-LOG-ASYNC"/>
             <appender-ref ref="DEFAULT-CONSOLE"/>
-            <appender-ref ref="CONSUME-LOG-ASYNC"/>
+            <appender-ref ref="EXCEL-LOG-ASYNC"/>
         </root>
     </springProfile>
 

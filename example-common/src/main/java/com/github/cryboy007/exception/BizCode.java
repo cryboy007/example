@@ -11,6 +11,7 @@ public enum BizCode implements ICode {
 	IDEMPONT_INVALID("600000","无效的幂等态"),
 	IDEMPONT_PASS("600001","幂等记录已存在"),
 	MULTIPLE_RECORDS("700001","One record is expected, but the query result is multiple records"),
+	CACHE_INIT_ERROR("700002","缓存初始化失败")
 	;
 	
 	

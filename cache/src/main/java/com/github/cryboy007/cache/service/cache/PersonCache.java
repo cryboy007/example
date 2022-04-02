@@ -26,12 +26,6 @@ import javax.annotation.PostConstruct;
 public class PersonCache extends BaseCacheServiceImpl<PersonDao, Person, PersonReq, PersonResp, PersonReqQuery>
         implements PersonService {
 
-    @Override
-    protected void setIdCacheCondition(CacheConditionBuilder<PersonReqQuery, Person> builder) {
-        Function<PersonReqQuery, Long> getValFun = PersonReqQuery::getId;
-        Predicate<Person> predicate = item -> item.getId().equals(getValFun.apply(builder.getR()));
-        builder.eq(getValFun,predicate);
-    }
 
     @Override
     protected E3Function<Person, Long> getIdFun() {
@@ -41,14 +35,8 @@ public class PersonCache extends BaseCacheServiceImpl<PersonDao, Person, PersonR
     @Override
     protected void setQueryConditions(QueryConditionBuilder<PersonReqQuery, Person> builder) {
         builder.singleLikeMultiIn(PersonReqQuery::getName, Person::getName)
-                .exists(Person.class, Person::getName,Person::getName,PersonReqQuery::getName,Person::getName);
-    }
-
-    @Override
-    protected void setCacheConditions(CacheConditionBuilder<PersonReqQuery, Person> builder) {
-        Function<PersonReqQuery, String> getValFun = PersonReqQuery::getName;
-        Predicate<Person> predicate = item -> item.getName().equals(getValFun.apply(builder.getR()));
-        builder.eq(getValFun,predicate);
+                //.exists(Person.class, Person::getName,Person::getName,PersonReqQuery::getName,Person::getName)
+        ;
     }
 
 

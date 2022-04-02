@@ -74,6 +74,8 @@ public class QueryConditionBuilder<R, T> {
         return r;
     }
 
+    public Set<Condition> getConditions() {return this.conditions;}
+
     public LambdaQueryWrapper<T> getLambdaQueryWrapper() {
         return (LambdaQueryWrapper) this.build().getWrapper();
     }
@@ -313,29 +315,6 @@ public class QueryConditionBuilder<R, T> {
                     this.queryWrapper.ge(condition.getColumn(), condition.getValue());
                 }
             });
-        }
-    }
-
-    @Data
-    class Condition {
-        private SqlKeyword type;
-        private E3Function<T, ?> column;
-        private Object value;
-
-        private Object startValue;
-        private Object endValue;
-
-        public Condition(SqlKeyword type, E3Function<T, ?> column, Object value) {
-            this.type = type;
-            this.column = column;
-            this.value = value;
-        }
-
-        public Condition(E3Function<T, ?> column, Object startValue, Object endValue) {
-            this.type = SqlKeyword.BETWEEN;
-            this.column = column;
-            this.startValue = startValue;
-            this.endValue = endValue;
         }
     }
 
