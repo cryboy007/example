@@ -25,6 +25,11 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     #下划线转驼峰
     map-underscore-to-camel-case: false
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
 cache:
   guava:
     enable: true

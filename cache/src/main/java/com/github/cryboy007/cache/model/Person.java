@@ -8,6 +8,7 @@ import com.github.cryboy007.cache.service.common.CommonQuery;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.ibatis.annotations.ConstructorArgs;
 import org.joor.Reflect;
 
 import java.util.List;

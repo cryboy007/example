@@ -7,6 +7,7 @@ import com.github.cryboy007.cache.service.PersonService;
 import com.github.cryboy007.cache.service.cache.PersonCache;
 import com.github.cryboy007.model.Book;
 import com.github.javafaker.Faker;
+import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,7 @@ public class CacheController {
     @GetMapping("cacheTwo")
     public ResponseEntity<List> cacheTwo(@RequestParam(value = "useCache",required = false) boolean useCache) {
         PersonReqQuery query = new PersonReqQuery();
+        PageHelper.startPage(0,100);
         return ResponseEntity.ok(personCache.useCache(useCache).find(null));
     }
 
@@ -69,7 +71,7 @@ public class CacheController {
     @GetMapping("batchSave")
     public ResponseEntity<Object> batchSave() {
         Faker faker = Faker.instance(Locale.CHINA);
-        List<Person> personList = Stream.generate(() -> new Person(null, faker.name().fullName())).limit(10000)
+        List<Person> personList = Stream.generate(() -> new Person(null, faker.name().fullName(),null)).limit(10000)
                 .collect(Collectors.toList());
         //插入假数据
         List<List<Person>> partition = Lists.partition(personList, 1000);
