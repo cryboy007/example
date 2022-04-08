@@ -1,5 +1,6 @@
 package com.github.cryboy007.cache.config;
 
+import com.baomidou.mybatisplus.extension.parser.JsqlParserSupport;
 import com.github.cryboy007.cache.inteceptor.NoArgsWhereInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;

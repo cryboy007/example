@@ -33,3 +33,6 @@ pagehelper:
 cache:
   guava:
     enable: true
+logging:
+  level:
+    com.github.cryboy007: debug

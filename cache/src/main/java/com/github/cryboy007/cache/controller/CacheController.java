@@ -86,4 +86,14 @@ public class CacheController {
         query.setName("张");
         return ResponseEntity.ok(personCache.useCache(useCache).find(query));
     }
+
+    @PostMapping("queryPage")
+    public ResponseEntity<List> queryPage(@RequestParam("pageNum") int pageNum,@RequestParam("pageSize") int pageSize,
+                                          @RequestParam("useCache") boolean useCache) {
+        PersonReqQuery query = new PersonReqQuery();
+        //query.setName("张三,李武");
+        //query.setName("张");
+        PageHelper.startPage(pageNum,pageSize);
+        return ResponseEntity.ok(personCache.useCache(useCache).find(query));
+    }
 }
