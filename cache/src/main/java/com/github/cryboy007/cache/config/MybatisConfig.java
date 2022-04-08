@@ -45,7 +45,7 @@ public class MybatisConfig {
         MybatisSqlSessionFactoryBean sqlSessionFactoryBean = new MybatisSqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(defaultDB);
         MybatisConfiguration configuration = new MybatisConfiguration();
-        configuration.addInterceptor(noArgsWhereInterceptor);
+        //configuration.addInterceptor(noArgsWhereInterceptor);
         configuration.setMapUnderscoreToCamelCase(true);
         sqlSessionFactoryBean.setConfiguration(configuration);
         try {
