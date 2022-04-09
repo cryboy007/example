@@ -33,6 +33,7 @@ public class PersonCache extends BaseCacheServiceImpl<PersonDao, Person, PersonR
     @Override
     protected void setQueryConditions(QueryConditionBuilder<PersonReqQuery, Person> builder) {
         builder.singleLikeMultiIn(PersonReqQuery::getName, Person::getName)
+                .orderByDesc(Person::getId)
                 //.exists(Person.class, Person::getName,Person::getName,PersonReqQuery::getName,Person::getName)
         ;
     }

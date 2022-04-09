@@ -172,7 +172,7 @@ public abstract class BaseCacheServiceImpl <M extends BaseMapper<T>, T extends C
 
     @NotNull
     protected CacheConditionBuilder<Q, T> getCacheConditionBuilder(Q req, Set<Condition> conditions) {
-        CacheConditionBuilder<Q, T> builder = new CacheConditionBuilder<>(cacheData(),entityClass,conditions);
+        CacheConditionBuilder<Q, T> builder = new CacheConditionBuilder<>(cacheData(),entityClass,conditions,this.lambdaQuery());
         builder.setCondition();
         return builder;
     }

@@ -122,17 +122,31 @@ public class QueryConditionBuilder<R, T> {
         return this;
     }
 
-    public <V> QueryConditionBuilder<R, T> orderByDesc(SFunction<T, V>... getOrderFields) {
+    public <V> QueryConditionBuilder<R, T> orderByDesc(E3Function<T, V> getOrderField) {
+        this.conditions.add(new Condition(SqlKeyword.DESC,getOrderField,null));
+        this.queryChainWrapper.orderByDesc(getOrderField);
+        return this;
+    }
+
+    public <V> QueryConditionBuilder<R, T> orderByDesc(E3Function<T, V>... getOrderFields) {
+        for (E3Function<T, V> getOrderField : getOrderFields) {
+            this.conditions.add(new Condition(SqlKeyword.DESC,getOrderField,null));
+        }
         this.queryChainWrapper.orderByDesc(Arrays.asList(getOrderFields));
         return this;
     }
 
-    public <V> QueryConditionBuilder<R, T> orderByAsc(SFunction<T, V> getOrderField) {
+
+    public <V> QueryConditionBuilder<R, T> orderByAsc( E3Function<T, V> getOrderField) {
+        this.conditions.add(new Condition(SqlKeyword.ASC,getOrderField,null));
         this.queryChainWrapper.orderByAsc(getOrderField);
         return this;
     }
 
-    public <V> QueryConditionBuilder<R, T> orderByAsc(SFunction<T, V>... getOrderFields) {
+    public <V> QueryConditionBuilder<R, T> orderByAsc(E3Function<T, V>... getOrderFields) {
+        for (E3Function<T, V> getOrderField : getOrderFields) {
+            this.conditions.add(new Condition(SqlKeyword.ASC,getOrderField,null));
+        }
         this.queryChainWrapper.orderByAsc(Arrays.asList(getOrderFields));
         return this;
     }
@@ -344,6 +358,7 @@ public class QueryConditionBuilder<R, T> {
                 } else if (SqlKeyword.NOT_LIKE.equals(condition.getType())) {
                     this.queryWrapper.notLike(condition.getColumn(), condition.getValue());
                 }
+                //排序已在前面做了 todo
             });
         }
     }

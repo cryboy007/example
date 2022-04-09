@@ -2,20 +2,24 @@ package com.github.cryboy007.cache.service.common;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.util.TypeUtils;
 import com.baomidou.mybatisplus.core.enums.SqlKeyword;
 import com.baomidou.mybatisplus.core.enums.SqlLike;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.sql.SqlUtils;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.github.cryboy007.exception.BizCode;
 import com.github.cryboy007.exception.BizException;
 import com.github.cryboy007.utils.CommonConvertUtil;
-import lombok.Data;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.joor.Reflect;
 import org.springframework.util.StopWatch;
@@ -43,6 +47,8 @@ public class CacheConditionBuilder<R, T extends CommonQuery> {
 
     private Set<Condition> conditions;
 
+    private LambdaQueryChainWrapper<T> queryChainWrapper;
+
     public R getR() {
         return r;
     }
@@ -62,6 +68,13 @@ public class CacheConditionBuilder<R, T extends CommonQuery> {
         this.entityClass = entityClass;
         this.conditions = conditions;
     }
+    public CacheConditionBuilder(List<T> cacheData, Class<T> entityClass, Set<Condition> conditions,LambdaQueryChainWrapper<T> lambdaQueryChainWrapper) {
+        this.cacheData = cacheData;
+        this.entityClass = entityClass;
+        this.conditions = conditions;
+        this.queryChainWrapper = lambdaQueryChainWrapper;
+    }
+
 
     public <V> CacheConditionBuilder<R, T> eq(Function<R, V> getValFun, Predicate<T> condition) {
         Optional.ofNullable(this.r).map(getValFun).ifPresent(queryVal -> {
@@ -112,8 +125,11 @@ public class CacheConditionBuilder<R, T extends CommonQuery> {
     }
 
     public void setCondition() {
+        StopWatch stopWatch = new StopWatch();
+        List<Condition> orderBy =
+                conditions.stream().filter(item -> item.getType().equals(SqlKeyword.ASC) || item.getType().equals(SqlKeyword.DESC)).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(conditions)) {
-            StopWatch stopWatch = new StopWatch();
+            conditions.removeAll(orderBy);
             stopWatch.start("buildCondition");
             List<Predicate<T>> predicates = this.buildCondition();
             stopWatch.stop();
@@ -123,10 +139,56 @@ public class CacheConditionBuilder<R, T extends CommonQuery> {
                 this.cacheData = this.cacheData.stream().filter(predicate).collect(Collectors.toList());
                 stopWatch.stop();
             }
-            System.out.println(stopWatch.prettyPrint());
         }
+        //分页
+        stopWatch.start("cache limit page start ...");
+        Page<Object> localPage = PageHelper.getLocalPage();
+        if (localPage != null) {
+            try {
+                this.cacheData = this.cacheData.stream().skip((localPage.getPageNum() - 1) * localPage.getPageSize())
+                        .limit(localPage.getPageSize()).collect(Collectors.toList());
+            }finally {
+                PageHelper.clearPage();
+            }
+        }
+        stopWatch.stop();
+        //排序
+        stopWatch.start("cache sort start ...");
+        Comparator<T> comparator = buildOrderBy(orderBy);
+        if (comparator != null) {
+            this.cacheData = this.cacheData.stream().sorted(comparator).collect(Collectors.toList());
+        }
+        stopWatch.stop();
+        log.debug(stopWatch.prettyPrint());
     }
 
+    private Comparator<T> buildOrderBy(List<Condition> orderBy) {
+        AtomicReference<Comparator<T>> comparator = new AtomicReference<>();
+        orderBy.forEach(condition -> {
+                switch (condition.getType()) {
+                    case ASC : {
+                        String column = StringUtils.sqlInjectionReplaceBlank(condition.getColumn().getColumn());
+                        E3Function fun = condition.getColumn();
+                        if (comparator.get() == null) {
+                            comparator.set(Comparator.comparing(fun));
+                        }else {
+                            comparator.set(comparator.get().thenComparing(fun));
+                        }
+                        break;
+                    }
+                    case DESC:{
+                        String column = StringUtils.sqlInjectionReplaceBlank(condition.getColumn().getColumn());
+                        E3Function fun = condition.getColumn();
+                        if (comparator.get() == null) {
+                            comparator.set(Comparator.comparing(fun).reversed());
+                        }else {
+                            comparator.set(comparator.get().thenComparing(fun).reversed());
+                        }
+                    }
+                }
+        });
+        return comparator.get();
+    }
     private List<Predicate<T>> buildCondition() {
         List<Predicate<T>> listPredicate = new ArrayList<>();
         conditions.forEach(condition -> {
@@ -177,9 +239,30 @@ public class CacheConditionBuilder<R, T extends CommonQuery> {
                     listPredicate.add(t -> !pattern.matcher(t.getValue(t,column)).matches());
                     break;
                 }
+                case BETWEEN: {
+                    if (handleBetweenCond(condition) != null) {
+                        listPredicate.add(handleBetweenCond(condition));
+                    }
+                }
             }
         });
         return listPredicate;
+    }
+    //todo 后续需要支持 Number类型和String
+    private Predicate<T> handleBetweenCond(Condition condition) {
+        return dateBetween(condition);
+    }
+
+    private Predicate<T> dateBetween(Condition condition) {
+        String column = condition.getColumn().getColumn();
+        Object startValue = condition.getStartValue();
+        Object endValue = condition.getEndValue();
+        Date startDate = TypeUtils.castToDate(startValue);
+        Date endDate = TypeUtils.castToDate(endValue);
+        if (startDate == null || endDate == null) {
+            return null;
+        }
+        return t -> t.getDate(t,column).compareTo(startDate) >= 0 && t.getDate(t,column).compareTo(endDate) <= 0;
     }
 
 
