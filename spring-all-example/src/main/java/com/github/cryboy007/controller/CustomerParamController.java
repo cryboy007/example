@@ -1,8 +1,11 @@
 package com.github.cryboy007.controller;
 
 import com.github.cryboy007.annotation.CustomerParam;
+import com.github.cryboy007.model.Book;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -17,5 +20,10 @@ public class CustomerParamController {
     @GetMapping("argumentResolver")
     public void argumentResolver(@CustomerParam(key = "demo") String demo) {
         log.info("demo:{}",demo);
+    }
+
+    @PostMapping("httpMessageConverter")
+    public void httpMessageConverter(@RequestBody Book book) {
+        log.info("book--{}",book);
     }
 }
