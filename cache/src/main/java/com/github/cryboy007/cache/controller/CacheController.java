@@ -1,13 +1,11 @@
 package com.github.cryboy007.cache.controller;
 
-import com.apifan.common.random.source.NumberSource;
 import com.github.cryboy007.cache.model.Person;
 import com.github.cryboy007.cache.model.PersonReqQuery;
 import com.github.cryboy007.cache.service.PersonService;
-import com.github.cryboy007.cache.service.cache.PersonCache;
-import com.github.cryboy007.model.Book;
 import com.github.javafaker.Faker;
 import com.github.pagehelper.PageHelper;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +14,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -36,10 +32,12 @@ import java.util.stream.Stream;
 public class CacheController {
     private final PersonService personCache;
 
+    private final LoadingCache loadingCache;
+
     @GetMapping("cache")
-    public ResponseEntity<List> getCache(@RequestParam(value = "useCache",required = false) boolean useCache) {
+    public ResponseEntity<Integer> getCache(@RequestParam(value = "useCache",required = false) boolean useCache) {
         PersonReqQuery query = new PersonReqQuery();
-        return ResponseEntity.ok(personCache.useCache(useCache).find(null));
+        return ResponseEntity.ok(personCache.useCache(useCache).find(null).size());
     }
 
     @RequestMapping("deleteCache/{id}")
@@ -95,5 +93,10 @@ public class CacheController {
         //query.setName("张");
         PageHelper.startPage(pageNum,pageSize);
         return ResponseEntity.ok(personCache.useCache(useCache).find(query));
+    }
+
+    @GetMapping("status")
+    public ResponseEntity<String> cacheStatus() {
+        return ResponseEntity.ok(loadingCache.stats().toString());
     }
 }

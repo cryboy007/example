@@ -16,7 +16,7 @@ spring:
       #空闲连接存活最大时间，默认600000（10分钟）
       idle-timeout: 30000
       #数据库连接超时时间,默认30秒，即30000
-      connection-timeout: 30000
+      connection-timeout: 60000
       connection-test-query: SELECT 1
 mybatis-plus:
   mapper-locations: classpath*:mapper/*Mapper.xml

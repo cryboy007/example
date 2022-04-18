@@ -10,6 +10,8 @@ import com.github.cryboy007.cache.service.common.QueryConditionBuilder;
 import com.github.cryboy007.cache.service.common.impl.BaseCacheServiceImpl;
 import com.github.cryboy007.cache.service.dao.PersonDao;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.util.RamUsageEstimator;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +23,7 @@ import javax.annotation.PostConstruct;
  */
 @Service
 @Cache(PersonCache.class)
+@Slf4j
 public class PersonCache extends BaseCacheServiceImpl<PersonDao, Person, PersonReq, PersonResp, PersonReqQuery>
         implements PersonService {
 
@@ -52,6 +55,7 @@ public class PersonCache extends BaseCacheServiceImpl<PersonDao, Person, PersonR
     public void initCache() {
         //存放数据
         NoArgsWhereHelper.setNoArgsWhere();
-        cache.put(PersonCache.class.getName(), getData());
+        //cache.put(PersonCache.class.getName(), getData());
+        log.debug("缓存大小{}:" + RamUsageEstimator.humanSizeOf(cache));
     }
 }
