@@ -3,6 +3,8 @@ package com.github.cryboy007.controller;
 import com.github.cryboy007.annotation.CustomerParam;
 import com.github.cryboy007.model.Book;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +25,8 @@ public class CustomerParamController {
     }
 
     @PostMapping("httpMessageConverter")
-    public void httpMessageConverter(@RequestBody Book book) {
+    public ResponseEntity<Book> httpMessageConverter(@RequestBody Book book) {
         log.info("book--{}",book);
+        return ResponseEntity.ok(book);
     }
 }
