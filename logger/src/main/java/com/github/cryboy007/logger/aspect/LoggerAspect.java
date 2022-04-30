@@ -82,11 +82,18 @@ public class LoggerAspect {
 	}
 
 	private AnnotatedElementKey getAnnotatedElementKey(ProceedingJoinPoint proceedingJoinPoint, Class<?> aClass) {
+
 		Signature signature = proceedingJoinPoint.getSignature();
 		MethodSignature methodSignature = (MethodSignature)signature;
 		Method targetMethod = methodSignature.getMethod();
 
-		return new AnnotatedElementKey(targetMethod, aClass);
+		AnnotatedElementKey annotatedElementKey = new AnnotatedElementKey(targetMethod, aClass);
+		if (logRecordExpressionEvaluator.getTargetMethodCache().containsKey(annotatedElementKey)) {
+			return annotatedElementKey;
+		}else {
+			logRecordExpressionEvaluator.getTargetMethodCache().put(annotatedElementKey,targetMethod);
+		}
+		return annotatedElementKey;
 	}
 
 	/**

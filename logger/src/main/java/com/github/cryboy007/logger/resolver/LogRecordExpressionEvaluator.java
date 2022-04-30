@@ -24,4 +24,8 @@ public class LogRecordExpressionEvaluator extends CachedExpressionEvaluator {
 	public String parseExpression(String conditionExpression, AnnotatedElementKey methodKey, EvaluationContext evalContext) {
 		return getExpression(this.expressionCache, methodKey, conditionExpression).getValue(evalContext, String.class);
 	}
+
+	public Map<AnnotatedElementKey, Method> getTargetMethodCache() {
+		return targetMethodCache;
+	}
 }
