@@ -2,6 +2,7 @@ package com.github.cryboy007.logger.annotation;
 
 import com.github.cryboy007.logger.enums.LoggerTemplate;
 import com.github.cryboy007.logger.model.Staff;
+import com.github.cryboy007.logger.resolver.LogRecordContext;
 
 import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Component;
@@ -13,15 +14,22 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class LogRecordTest {
-	@LogRecord(template = LoggerTemplate.RECORD_OPERATOR,spelValue = {"#staff.name","新增"})
+	@LogRecord(template = LoggerTemplate.RECORD_OPERATOR,spelValue = {"#storeName","#staff.name","新增"},bizNo = "40001")
 	public void operationAdd(Staff staff) {
-		System.out.println(staff);
+		LogRecordContext.putVariable("oldDeliveryUserId", "1001");
+		System.out.println("operationAdd");
 		currentProxy().operationDel(staff);
 	}
 
-	@LogRecord(template = LoggerTemplate.RECORD_OPERATOR,spelValue = {"#staff.name","删除"})
+	@LogRecord(template = LoggerTemplate.RECORD_OPERATOR,spelValue = {"#storeName","#staff.name","删除"},bizNo = "40003")
 	public void operationDel(Staff staff) {
-		System.out.println(staff);
+		System.out.println("operationDel");
+		currentProxy().operationQuery(staff);
+	}
+
+	@LogRecord(template = LoggerTemplate.RECORD_OPERATOR,spelValue = {"#storeName","#staff.name","查询"},bizNo = "40002")
+	public void operationQuery(Staff staff) {
+		System.out.println("operationQuery");
 	}
 
 	private LogRecordTest currentProxy() {

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public enum LoggerTemplate {
-	RECORD_OPERATOR("操作人:{}--执行了{}操作");
+	RECORD_OPERATOR("门店:{} 操作人:{}--执行了{}操作");
 
 	String value;
 
