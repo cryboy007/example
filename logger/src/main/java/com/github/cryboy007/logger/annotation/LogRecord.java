@@ -26,4 +26,7 @@ public @interface LogRecord {
 	LoggerTemplate template();
 
 	String[] spelValue() default {};
+
+	String[] function() default {};
+
 }

@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import com.github.cryboy007.logger.annotation.LogRecord;
 import com.github.cryboy007.logger.enums.LoggerTemplate;
 import com.github.cryboy007.logger.exception.MethodExecuteResult;
+import com.github.cryboy007.logger.factory.ParseFunctionFactory;
 import com.github.cryboy007.logger.resolver.LogRecordContext;
 import com.github.cryboy007.logger.resolver.LogRecordEvaluationContext;
 import com.github.cryboy007.logger.resolver.LogRecordValueParser;
@@ -27,8 +28,6 @@ import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 import org.springframework.core.annotation.Order;
 import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
@@ -43,10 +42,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggerAspect {
 
-	private final ExpressionParser parser = new SpelExpressionParser();
-
 	@Resource
 	private LogRecordValueParser logRecordValueParser;
+
+	@Resource
+	private ParseFunctionFactory parseFunctionFactory;
+
+/*	@Resource
+	private LogRecordInterceptor logRecordInterceptor;*/
 
 	/**
 	 * Pointcut注解声明切点
@@ -78,6 +81,8 @@ public class LoggerAspect {
 		Map<String, String> functionNameAndReturnMap = new HashMap<>();
 		try {
 			//业务逻辑执行前的自定义函数解析
+			//IParseFunction operator = parseFunctionFactory.getFunction("operator");
+			//operator.apply("123");
 			functionNameAndReturnMap = processBeforeExecuteFunctionTemplate(template, targetClass, method, args);
 		}catch (Exception e) {
 			log.error("log record parse before function exception", e);
@@ -141,6 +146,8 @@ public class LoggerAspect {
 		String template = (String) map.get("template");
 		Object[] params = Arrays.stream(expressions).map(function).toArray();
 		log.info(template,params);
+
+
 	}
 
 	private AnnotatedElementKey getAnnotatedElementKey(Class<?> aClass,Method targetMethod) {
