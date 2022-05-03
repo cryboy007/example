@@ -1,12 +1,16 @@
 package com.github.cryboy007.config;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.github.cryboy007.converter.MyConverter;
 import com.github.cryboy007.interceptior.CustomAsyncHandlerInterceptor;
 import com.github.cryboy007.interceptior.CustomDeferredResultProcessingInterceptor;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -14,9 +18,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-
-import java.util.List;
 
 /**
  * @ClassName WebConfi
@@ -65,7 +66,7 @@ public class WebConfig implements WebMvcConfigurer {
         objectMapper.registerModule(simpleModule);
         objectMapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true);// 忽略 transient 修饰的属性
         converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
-        converters.add(new MyConverter());//自定义解析器
+        converters.add(0,new MyConverter());//自定义解析器
         //字符串转换器
         //StringHttpMessageConverter converter  = new StringHttpMessageConverter(Charset.forName("UTF-8"));
         //converters.add(converter);

@@ -1,7 +1,11 @@
 package com.github.cryboy007.converter;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import com.github.cryboy007.model.Book;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -9,9 +13,6 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.util.StreamUtils;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -24,7 +25,8 @@ public class MyConverter extends AbstractHttpMessageConverter<Book> {
 
     public MyConverter() {
         //x-zyf 是自定义的媒体类型
-        super(new MediaType("application", "ht", StandardCharsets.UTF_8));
+        //super(new MediaType("application", "ht", StandardCharsets.UTF_8));
+        super(MediaType.APPLICATION_JSON);
     }
 
     @Override
