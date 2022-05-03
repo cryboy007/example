@@ -7,4 +7,8 @@ package com.github.cryboy007.service;
  */
 public interface OperationService {
     void afterCommit();
+
+    void transactionTest();
+
+    void transactionTest2();
 }

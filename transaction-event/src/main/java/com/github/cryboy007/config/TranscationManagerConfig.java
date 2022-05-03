@@ -6,6 +6,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
@@ -30,5 +31,13 @@ public class TranscationManagerConfig implements TransactionManagementConfigurer
     @Override
     public PlatformTransactionManager annotationDrivenTransactionManager() {
         return dataSourceTransactionManager;
+    }
+
+    //编程式事务
+    @Bean
+    public TransactionTemplate transactionTemplate(PlatformTransactionManager dataSourceTransactionManager) {
+        final TransactionTemplate transactionTemplate = new TransactionTemplate();
+        transactionTemplate.setTransactionManager(dataSourceTransactionManager);
+        return transactionTemplate;
     }
 }

@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.web.client.RestTemplate;
 
 import static com.github.crybooy007.mq.enums.MqSceneEnum.TEST_DELAY;
 
@@ -17,6 +19,11 @@ import static com.github.crybooy007.mq.enums.MqSceneEnum.TEST_DELAY;
 public class MqApplication {
 
 	private final RabbitTemplate rabbitTemplate;
+
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
 
 
 	public static void main(String[] args) {
