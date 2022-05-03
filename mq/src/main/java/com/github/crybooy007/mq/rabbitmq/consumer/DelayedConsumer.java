@@ -1,19 +1,14 @@
 package com.github.crybooy007.mq.rabbitmq.consumer;
 
-import java.io.IOException;
-import java.util.Date;
-
+import com.github.cryboy007.model.Book;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.annotation.Argument;
-import org.springframework.amqp.rabbit.annotation.Exchange;
-import org.springframework.amqp.rabbit.annotation.Queue;
-import org.springframework.amqp.rabbit.annotation.QueueBinding;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.Date;
 
 /**
  *@ClassName DelayedConsumer
@@ -48,7 +43,7 @@ public class DelayedConsumer {
 					),key = "delayed.one"
 			),containerFactory = "customSimpleRabbitFactory"
 	)
-	public void onMessage(String data,Message msg, Channel channel) throws IOException {
+	public void onMessage(Book data,Message msg, Channel channel) throws IOException {
 		long tag = msg.getMessageProperties().getDeliveryTag();
 		log.info("当前时间：{},收到请求，msg:{}", new Date(), data);
 		channel.basicAck(tag,true);
