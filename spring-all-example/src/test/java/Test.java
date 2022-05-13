@@ -1,5 +1,16 @@
+import com.alibaba.fastjson.JSONObject;
+import org.springframework.core.io.ClassPathResource;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @ClassName Test
@@ -20,5 +31,29 @@ public class Test {
             matcher_start = matcher.end();
         }
         System.out.println(sb.toString());
+    }
+
+    @org.junit.Test
+    public void test() {
+        AtomicLong atomicLong = new AtomicLong(10);
+        System.out.println(atomicLong.incrementAndGet());
+    }
+
+    @org.junit.Test
+    public void test2() throws IOException {
+        final ClassPathResource resource = new ClassPathResource("goods.json");
+        final InputStream inputStream = resource.getInputStream();
+        BufferedReader streamReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        StringBuilder responseStrBuilder = new StringBuilder();
+
+        String inputStr;
+        while ((inputStr = streamReader.readLine()) != null)
+            responseStrBuilder.append(inputStr);
+
+        final List<ReceiveSkuDTO> receiveSkuDTOS = JSONObject.parseArray(responseStrBuilder.toString(), ReceiveSkuDTO.class);
+        final Set<String> goods = receiveSkuDTOS.stream().map(ReceiveSkuDTO::getGoodsCode).collect(Collectors.toSet());
+        final Set<String> skuCodes = receiveSkuDTOS.stream().map(ReceiveSkuDTO::getCode).collect(Collectors.toSet());
+        System.out.println("skuCodes = " + skuCodes);
+        System.out.println("goods = " + goods);
     }
 }

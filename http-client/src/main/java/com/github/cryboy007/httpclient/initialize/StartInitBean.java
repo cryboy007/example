@@ -1,13 +1,9 @@
 package com.github.cryboy007.httpclient.initialize;
 
-import javax.annotation.PostConstruct;
-
+import com.github.cryboy007.httpclient.example.MTBlogExample;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,14 +17,14 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class StartInitBean implements CommandLineRunner {
 	private final RestTemplate restTemplate;
+	private final MTBlogExample mtBlogExample;
 
 
 
 	@Override
 	public void run(String... args) throws Exception {
-		new Thread(() -> {
-			ResponseEntity<String> forEntity = restTemplate.getForEntity("https://znsd.top:3007", String.class);
-			log.info("执行完毕");
-		}).start();
+		//ResponseEntity<String> forEntity = restTemplate.getForEntity("https://znsd.top:3007", String.class);
+		//log.info("执行完毕");
+		new Thread(mtBlogExample::getBlog).start();
 	}
 }
