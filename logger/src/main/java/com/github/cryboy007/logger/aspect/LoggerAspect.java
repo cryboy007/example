@@ -1,13 +1,5 @@
 package com.github.cryboy007.logger.aspect;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
-import javax.annotation.Resource;
-
 import com.github.cryboy007.logger.annotation.LogRecord;
 import com.github.cryboy007.logger.enums.LoggerTemplate;
 import com.github.cryboy007.logger.exception.MethodExecuteResult;
@@ -22,7 +14,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-
 import org.springframework.context.expression.AnnotatedElementKey;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.StandardReflectionParameterNameDiscoverer;
@@ -30,6 +21,13 @@ import org.springframework.core.annotation.Order;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  *@ClassName LoggerAspect
@@ -125,27 +123,36 @@ public class LoggerAspect {
 	private void recordExecute(Object ret, Method method, Object[] args, String bizNo, Class<?> targetClass,
 			boolean success, String errorMsg, Map<String, String> functionNameAndReturnMap) {
 		ParameterNameDiscoverer discoverer = new StandardReflectionParameterNameDiscoverer();
-		LogRecordEvaluationContext logRecordEvaluationContext =
+		LogRecordEvaluationContext defaultExpress =
 				new LogRecordEvaluationContext(ret,method,args,discoverer,ret,errorMsg);
 		LogRecordValueParser.LogRecordExpressionEvaluator logRecordExpressionEvaluator = new LogRecordValueParser.LogRecordExpressionEvaluator();
 		String[] parameterNames = discoverer.getParameterNames(method);
-		EvaluationContext ctx = logRecordValueParser.createEvaluationContext(args, parameterNames,logRecordEvaluationContext);
+		EvaluationContext ctx = logRecordValueParser.createEvaluationContext(args, parameterNames,defaultExpress);
 		//EvaluationContext ctx = initContextVariable(args, parameterNames);
 		Map<String, Object> map = LogRecordContext.getVariables();
 		AnnotatedElementKey annotatedElementKey = getAnnotatedElementKey(targetClass,method);
 		Function<String, Object> function = item -> {
 			try {
-				//return parser.parseExpression(item).getValue(ctx); 替换成缓存获取
-				return logRecordExpressionEvaluator.parseExpression(item,annotatedElementKey, ctx);
+				//自定义的参数
+				if (logRecordExpressionEvaluator.parseExpression(item,annotatedElementKey, ctx) == null) {
+					return logRecordExpressionEvaluator.parseExpression(item,annotatedElementKey, defaultExpress);
+				}else {
+					//return parser.parseExpression(item).getValue(ctx); 替换成缓存获取
+					return logRecordExpressionEvaluator.parseExpression(item,annotatedElementKey, ctx);
+				}
 			}
 			catch (Exception ignored) {
 			}
 			return item;
 		};
-		String[] expressions = (String[])map.get("expressions");
-		String template = (String) map.get("template");
-		Object[] params = Arrays.stream(expressions).map(function).toArray();
-		log.info(template,params);
+		if (success) {
+			String[] expressions = (String[])map.get("expressions");
+			String template = (String) map.get("template");
+			Object[] params = Arrays.stream(expressions).map(function).toArray();
+			log.info(template,params);
+		}else {
+			log.error(errorMsg);
+		}
 
 
 	}

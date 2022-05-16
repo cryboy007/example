@@ -1,10 +1,12 @@
 package com.github.cryboy007.logger.resolver;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-
+import com.github.cryboy007.logger.service.IParseFunction;
+import com.github.cryboy007.logger.utils.SpringContextUtil;
 import org.springframework.context.expression.MethodBasedEvaluationContext;
 import org.springframework.core.ParameterNameDiscoverer;
+
+import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  *@ClassName LogRecordEvaluationContext
@@ -23,6 +25,9 @@ public class LogRecordEvaluationContext extends MethodBasedEvaluationContext {
 				setVariable(entry.getKey(), entry.getValue());
 			}
 		}
+		final IParseFunction operator = SpringContextUtil.getBeanById("defaultParseFunction", IParseFunction.class);
+		final Map<String, IParseFunction> beans = SpringContextUtil.getApplicationContext().getBeansOfType(IParseFunction.class);
+		setVariable("operator",operator.apply(null));
 		//把方法的返回值和 ErrorMsg 都放到 RootObject 中
 		setVariable("_ret", ret);
 		setVariable("_errorMsg", errorMsg);
