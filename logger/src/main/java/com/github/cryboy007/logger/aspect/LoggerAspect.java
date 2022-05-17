@@ -126,24 +126,15 @@ public class LoggerAspect {
 		LogRecordEvaluationContext defaultExpress =
 				new LogRecordEvaluationContext(ret,method,args,discoverer,ret,errorMsg);
 		LogRecordValueParser.LogRecordExpressionEvaluator logRecordExpressionEvaluator = new LogRecordValueParser.LogRecordExpressionEvaluator();
-		String[] parameterNames = discoverer.getParameterNames(method);
-		EvaluationContext ctx = logRecordValueParser.createEvaluationContext(args, parameterNames,defaultExpress);
-		//EvaluationContext ctx = initContextVariable(args, parameterNames);
 		Map<String, Object> map = LogRecordContext.getVariables();
 		AnnotatedElementKey annotatedElementKey = getAnnotatedElementKey(targetClass,method);
 		Function<String, Object> function = item -> {
-			try {
 				//自定义的参数
-				if (logRecordExpressionEvaluator.parseExpression(item,annotatedElementKey, ctx) == null) {
-					return logRecordExpressionEvaluator.parseExpression(item,annotatedElementKey, defaultExpress);
-				}else {
-					//return parser.parseExpression(item).getValue(ctx); 替换成缓存获取
-					return logRecordExpressionEvaluator.parseExpression(item,annotatedElementKey, ctx);
-				}
+			try {
+				return logRecordExpressionEvaluator.parseExpression(item,annotatedElementKey, defaultExpress);
+			}catch (IllegalStateException e) {
+				return item;
 			}
-			catch (Exception ignored) {
-			}
-			return item;
 		};
 		if (success) {
 			String[] expressions = (String[])map.get("expressions");

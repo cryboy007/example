@@ -7,6 +7,8 @@ import com.github.cryboy007.logger.resolver.LogRecordContext;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  *@ClassName LogRecordTest
  *@Author tao.he
@@ -34,5 +36,11 @@ public class LogRecordTest {
 
 	private LogRecordTest currentProxy() {
 		return (LogRecordTest)AopContext.currentProxy();
+	}
+
+	@LogRecord(template = LoggerTemplate.RECORD_OPERATOR,spelValue = {"#staffs[0].name","#operator","批量"},bizNo = "40000")
+	public void batchAdd(List<Staff> staffs) {
+		currentProxy().operationQuery(staffs.get(0));
+
 	}
 }
