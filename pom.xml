@@ -23,6 +23,7 @@
         <module>aviator-example</module>
         <module>cache</module>
         <module>spring-all-example</module>
+        <module>tools-example</module>
     </modules>
 
 
