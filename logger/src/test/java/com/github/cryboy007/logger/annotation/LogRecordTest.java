@@ -43,4 +43,9 @@ public class LogRecordTest {
 		currentProxy().operationQuery(staffs.get(0));
 
 	}
+
+	@LogRecord(template = LoggerTemplate.RECORD_OPERATOR2,bizNo = "40002")
+	public void operationQuery2(Staff staff) {
+		System.out.println("operationQuery");
+	}
 }

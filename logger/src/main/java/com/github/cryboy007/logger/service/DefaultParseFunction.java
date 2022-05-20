@@ -21,7 +21,7 @@ public class DefaultParseFunction implements IParseFunction{
 	}
 
 	private String getOperator(String value) {
-		return "张三";
+		return "天河店";
 	}
 
 }
