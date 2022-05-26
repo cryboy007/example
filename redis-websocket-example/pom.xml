@@ -28,7 +28,6 @@
                     <artifactId>lettuce-core</artifactId>
                 </exclusion>
             </exclusions>
-            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>redis.clients</groupId>
