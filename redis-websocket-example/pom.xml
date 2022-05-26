@@ -18,13 +18,17 @@
             <exclusions>
                 <!--
                 Springboot默认是使用lettuce来连接redis的,会出现
-                Command timed out after 6 second(s),但是jedis不支持Stream
+                Command timed out after 6 second(s),
+                https://stackoverflow.com/questions/67485923/streams-not-supported-when-using-jedis-3-6-0-in-spring-boot-2-3-x
+                The support of Streams with Jedis is only available from 2.5.0.
+                So you'll have to use at least 2.5.0 version of spring-data-redis.
                 -->
                 <exclusion>
                     <groupId>io.lettuce</groupId>
                     <artifactId>lettuce-core</artifactId>
                 </exclusion>
             </exclusions>
+            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>redis.clients</groupId>
