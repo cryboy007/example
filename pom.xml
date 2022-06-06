@@ -25,6 +25,7 @@
         <module>cache</module>
         <module>spring-all-example</module>
         <module>tools-example</module>
+        <module>juc_example</module>
     </modules>
 
 
