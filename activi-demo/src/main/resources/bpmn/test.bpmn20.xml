@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef">
+  <process id="test" name="test" isExecutable="true">
+    <startEvent id="sid-450bf2c6-cc19-4d84-99eb-0c1a8a35418f" name="第一个流程">
+      <extensionElements/>
+    </startEvent>
+    <userTask id="sid-576e8947-ef4f-4285-9a44-da0ac3554470" name="领导审批" activiti:async="true">
+      <extensionElements>
+        <activiti:formProperty id="Property 1"/>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-b04e3bfb-9103-4cfb-bbf0-30fdf3a8a754" sourceRef="sid-450bf2c6-cc19-4d84-99eb-0c1a8a35418f" targetRef="sid-576e8947-ef4f-4285-9a44-da0ac3554470"/>
+    <endEvent id="sid-d3ca9e62-b231-460f-a765-4a74cb6edf38" name="审批结束"/>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_test">
+    <bpmndi:BPMNPlane bpmnElement="test" id="BPMNPlane_test">
+      <bpmndi:BPMNShape id="shape-c980a905-f443-448d-ae49-a9f43f2f2318" bpmnElement="sid-450bf2c6-cc19-4d84-99eb-0c1a8a35418f">
+        <omgdc:Bounds x="-310.0" y="-125.0" width="30.0" height="30.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-23f7cf47-2c6d-4348-a5a7-712ccb8bdb02" bpmnElement="sid-576e8947-ef4f-4285-9a44-da0ac3554470">
+        <omgdc:Bounds x="-315.0" y="-65.0" width="50.0" height="40.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge-fca7e6db-a9ac-439f-a28c-125f7b245671" bpmnElement="sid-b04e3bfb-9103-4cfb-bbf0-30fdf3a8a754">
+        <omgdi:waypoint x="-302.5" y="-95.0"/>
+        <omgdi:waypoint x="-302.5" y="-65.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="shape-df93e093-004b-4b8f-a4a2-1aa1439fee3b" bpmnElement="sid-d3ca9e62-b231-460f-a765-4a74cb6edf38">
+        <omgdc:Bounds x="-315.0" y="10.0" width="30.0" height="30.0"/>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
