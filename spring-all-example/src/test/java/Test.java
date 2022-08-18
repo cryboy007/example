@@ -56,4 +56,19 @@ public class Test {
         System.out.println("skuCodes = " + skuCodes);
         System.out.println("goods = " + goods);
     }
+
+    @org.junit.Test
+    public void regexTest() {
+        final Pattern regex = Pattern.compile("((?<objCode>^[a-zA-Z0-9]+))_(?<num>[0-9])+(?<ext>\\.[a-zA-Z0-9]+)$");
+        final String fileName = "MCL20111416_12.jpg";
+        final Matcher m = regex.matcher(fileName);
+        if(!m.find()) {
+            System.out.println("错误");
+        }
+        String objCode = m.group("objCode");
+        String num = m.group("num");
+        String ext = m.group("ext");
+        System.out.println(objCode+"_"+num);
+        System.out.println(ext);
+    }
 }
