@@ -36,6 +36,10 @@ public class LogRecordContext {
 		Map<String, Object> map = variableMapStack.get().peek();
 		map.put(k,v);
 	}
+	public static void putVariables(Map<String,Object> params) {
+		Map<String, Object> map = variableMapStack.get().peek();
+		map.putAll(params);
+	}
 
 	public static void clear() {
 		variableMapStack.get().pop();

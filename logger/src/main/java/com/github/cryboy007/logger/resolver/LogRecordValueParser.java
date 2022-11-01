@@ -4,6 +4,8 @@ import org.springframework.context.expression.AnnotatedElementKey;
 import org.springframework.context.expression.CachedExpressionEvaluator;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
+import org.springframework.expression.ParserContext;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
@@ -44,12 +46,35 @@ public class LogRecordValueParser extends CachedExpressionEvaluator {
 		private final Map<AnnotatedElementKey, Method> targetMethodCache = new ConcurrentHashMap<>(64);
 
 		public String parseExpression(String conditionExpression, AnnotatedElementKey methodKey, EvaluationContext evalContext) {
-			return getExpression(this.expressionCache, methodKey, conditionExpression).getValue(evalContext, String.class);
+			//final Expression expression = getExpression(this.expressionCache, methodKey, conditionExpression);
+			//支持模板解析
+			final SpelExpressionParser spelExpressionParser = new SpelExpressionParser();
+			final Expression parseExpression = spelExpressionParser.parseExpression(conditionExpression, TEMPLATE_EXPRESSION);
+			return parseExpression.getValue(evalContext, String.class);
 		}
 
 		public Map<AnnotatedElementKey, Method> getTargetMethodCache() {
 			return targetMethodCache;
 		}
 
+
+
+		ParserContext TEMPLATE_EXPRESSION = new ParserContext() {
+
+			@Override
+			public boolean isTemplate() {
+				return true;
+			}
+
+			@Override
+			public String getExpressionPrefix() {
+				return "${";
+			}
+
+			@Override
+			public String getExpressionSuffix() {
+				return "}";
+			}
+		};
 	}
 }
