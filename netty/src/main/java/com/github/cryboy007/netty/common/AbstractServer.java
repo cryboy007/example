@@ -1,6 +1,7 @@
 package com.github.cryboy007.netty.common;
 
 import java.util.List;
+import java.util.Optional;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -20,10 +21,12 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public abstract class AbstractServer {
 	private int port;
 	private List<ChannelInboundHandlerAdapter> channelInboundHandlerAdapterList;
+	private List<Class<? extends ChannelInboundHandlerAdapter>> prototypeList ;
 
-	public AbstractServer(int port,List<ChannelInboundHandlerAdapter> channelInboundHandlerAdapterList) {
+	public  AbstractServer(int port,List<Class<? extends ChannelInboundHandlerAdapter>> prototypeList ,List<ChannelInboundHandlerAdapter> channelInboundHandlerAdapterList) {
 		this.port = port;
 		this.channelInboundHandlerAdapterList = channelInboundHandlerAdapterList;
+		this.prototypeList = prototypeList;
 	}
 
 	public void run(String[] args) throws InterruptedException {
@@ -39,7 +42,12 @@ public abstract class AbstractServer {
 					.childHandler(new ChannelInitializer<SocketChannel>() {
 						@Override
 						protected void initChannel(SocketChannel channel) throws Exception {
-							channelInboundHandlerAdapterList.forEach(channel.pipeline()::addLast);
+							Optional.ofNullable(prototypeList).ifPresent(LambdaUtil.wrapConsumer(arr -> {
+								arr.stream().map(LambdaUtil.wrapFunction(Class::newInstance)).forEach(channel.pipeline()::addLast);
+							}));
+							Optional.ofNullable(channelInboundHandlerAdapterList).ifPresent(arr -> {
+								arr.forEach(channel.pipeline()::addLast);
+							});
 						}
 					})
 					//option() 是提供给NioServerSocketChannel

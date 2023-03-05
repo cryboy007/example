@@ -3,6 +3,7 @@ package com.github.cryboy007.netty.time;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -11,6 +12,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  *@Author tao.he
  *@Since 2023/3/5 12:10
  */
+@ChannelHandler.Sharable
 public class TimeServerHandler extends ChannelInboundHandlerAdapter {
 	//会在连接被建立并且准备进行通信时被调用。因此让我们在这个方法里完成一个代表当前时间的 32 位整数消息的构建工作。
 	@Override
