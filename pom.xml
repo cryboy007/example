@@ -23,7 +23,9 @@
         <module>aviator-example</module>
         <module>cache</module>
         <module>spring-all-example</module>
-    </modules>
+		<module>elastic</module>
+		<module>netty</module>
+	</modules>
 
 
 
