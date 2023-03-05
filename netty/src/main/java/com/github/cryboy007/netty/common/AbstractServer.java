@@ -43,7 +43,10 @@ public abstract class AbstractServer {
 						@Override
 						protected void initChannel(SocketChannel channel) throws Exception {
 							Optional.ofNullable(prototypeList).ifPresent(LambdaUtil.wrapConsumer(arr -> {
-								arr.stream().map(LambdaUtil.wrapFunction(Class::newInstance)).forEach(channel.pipeline()::addLast);
+								for (Class<? extends ChannelInboundHandlerAdapter> clazz : arr) {
+									ChannelInboundHandlerAdapter channelInboundHandlerAdapter = clazz.newInstance();
+									channel.pipeline().addLast(channelInboundHandlerAdapter);
+								}
 							}));
 							Optional.ofNullable(channelInboundHandlerAdapterList).ifPresent(arr -> {
 								arr.forEach(channel.pipeline()::addLast);
