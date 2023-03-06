@@ -1,10 +1,10 @@
 package com.github.cryboy007.netty.pojo;
 
-import java.util.List;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+
+import java.util.List;
 
 /**
  *@ClassName TimeDecoder
@@ -17,6 +17,7 @@ public class TimeDecoder extends ByteToMessageDecoder {
 		if (in.readableBytes() < 4) {
 			return;
 		}
-		out.add(in.readBytes(4));
+//		out.add(in.readBytes(4));
+		out.add(new UnixTime(in.readUnsignedInt()));
 	}
 }
