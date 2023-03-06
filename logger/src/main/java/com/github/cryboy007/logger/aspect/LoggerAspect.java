@@ -3,7 +3,6 @@ package com.github.cryboy007.logger.aspect;
 import com.github.cryboy007.logger.annotation.LogRecord;
 import com.github.cryboy007.logger.enums.LoggerTemplate;
 import com.github.cryboy007.logger.exception.MethodExecuteResult;
-import com.github.cryboy007.logger.factory.ParseFunctionFactory;
 import com.github.cryboy007.logger.resolver.LogRecordContext;
 import com.github.cryboy007.logger.resolver.LogRecordEvaluationContext;
 import com.github.cryboy007.logger.resolver.LogRecordValueParser;
@@ -12,7 +11,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.expression.AnnotatedElementKey;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -24,10 +22,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  *@ClassName LoggerAspect
@@ -41,21 +37,9 @@ import java.util.function.Function;
 public class LoggerAspect {
 
 	@Resource
-	private LogRecordValueParser logRecordValueParser;
+	private LogRecordValueParser.LogRecordExpressionEvaluator logRecordExpressionEvaluator;
 
-	@Resource
-	private ParseFunctionFactory parseFunctionFactory;
 
-/*	@Resource
-	private LogRecordInterceptor logRecordInterceptor;*/
-
-	/**
-	 * Pointcut注解声明切点
-	 * 配置切入点,该方法无方法体,主要为方便同类中其他方法使用此处配置的切入点
-	 * @within 对类起作用，@annotation 对方法起作用
-	 */
-	@Pointcut("@annotation(com.github.cryboy007.logger.annotation.LogRecord)")
-	public void loggerPointcut(){}
 
 	/**
 	 *
@@ -78,9 +62,6 @@ public class LoggerAspect {
 		//业务逻辑执行前的自定义函数解析
 		Map<String, String> functionNameAndReturnMap = new HashMap<>();
 		try {
-			//业务逻辑执行前的自定义函数解析
-			//IParseFunction operator = parseFunctionFactory.getFunction("operator");
-			//operator.apply("123");
 			functionNameAndReturnMap = processBeforeExecuteFunctionTemplate(template, targetClass, method, args);
 		}catch (Exception e) {
 			log.error("log record parse before function exception", e);
@@ -95,7 +76,7 @@ public class LoggerAspect {
 		try {
 			EvaluationContext ctx = null;
 
-			if (bizNo != null && bizNo.length() > 0) {
+			if (bizNo.length() > 0) {
 				recordExecute(proceed, method, args, bizNo, targetClass,
 						methodExecuteResult.isSuccess(), methodExecuteResult.getErrorMsg(), functionNameAndReturnMap);
 			}else {
@@ -125,31 +106,12 @@ public class LoggerAspect {
 		ParameterNameDiscoverer discoverer = new StandardReflectionParameterNameDiscoverer();
 		LogRecordEvaluationContext defaultExpress =
 				new LogRecordEvaluationContext(ret,method,args,discoverer,ret,errorMsg);
-		LogRecordValueParser.LogRecordExpressionEvaluator logRecordExpressionEvaluator = new LogRecordValueParser.LogRecordExpressionEvaluator();
-		String[] parameterNames = discoverer.getParameterNames(method);
-		EvaluationContext ctx = logRecordValueParser.createEvaluationContext(args, parameterNames,defaultExpress);
-		//EvaluationContext ctx = initContextVariable(args, parameterNames);
 		Map<String, Object> map = LogRecordContext.getVariables();
 		AnnotatedElementKey annotatedElementKey = getAnnotatedElementKey(targetClass,method);
-		Function<String, Object> function = item -> {
-			try {
-				//自定义的参数
-				if (logRecordExpressionEvaluator.parseExpression(item,annotatedElementKey, ctx) == null) {
-					return logRecordExpressionEvaluator.parseExpression(item,annotatedElementKey, defaultExpress);
-				}else {
-					//return parser.parseExpression(item).getValue(ctx); 替换成缓存获取
-					return logRecordExpressionEvaluator.parseExpression(item,annotatedElementKey, ctx);
-				}
-			}
-			catch (Exception ignored) {
-			}
-			return item;
-		};
 		if (success) {
-			String[] expressions = (String[])map.get("expressions");
 			String template = (String) map.get("template");
-			Object[] params = Arrays.stream(expressions).map(function).toArray();
-			log.info(template,params);
+			final String content = logRecordExpressionEvaluator.parseExpression(template, annotatedElementKey, defaultExpress);
+			log.info(content);
 		}else {
 			log.error(errorMsg);
 		}
@@ -158,14 +120,7 @@ public class LoggerAspect {
 	}
 
 	private AnnotatedElementKey getAnnotatedElementKey(Class<?> aClass,Method targetMethod) {
-		AnnotatedElementKey annotatedElementKey = new AnnotatedElementKey(targetMethod, aClass);
-		/*
-		if (logRecordValueParser.LogRecordExpressionEvaluator.getTargetMethodCache().containsKey(annotatedElementKey)) {
-			return annotatedElementKey;
-		}else {
-			logRecordExpressionEvaluator.getTargetMethodCache().put(annotatedElementKey,targetMethod);
-		}*/
-		return annotatedElementKey;
+		return new AnnotatedElementKey(targetMethod, aClass);
 	}
 
 	private Method getMethod(ProceedingJoinPoint proceedingJoinPoint) {

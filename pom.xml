@@ -23,9 +23,10 @@
         <module>aviator-example</module>
         <module>cache</module>
         <module>spring-all-example</module>
+        <module>tools-example</module>
+        <module>juc_example</module>
 		<module>elastic</module>
 		<module>netty</module>
-	</modules>
         <module>tools-example</module>
         <module>juc_example</module>
         <module>camunda-example</module>
