@@ -1,17 +1,13 @@
 package com.github.cryboy007.netty.common;
 
-import java.util.List;
-import java.util.Optional;
-
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  *@ClassName AbstractServer
@@ -21,9 +17,9 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public abstract class AbstractServer {
 	private int port;
 	private List<ChannelInboundHandlerAdapter> channelInboundHandlerAdapterList;
-	private List<Class<? extends ChannelInboundHandlerAdapter>> prototypeList ;
+	private List<Class<? extends ChannelOutboundHandlerAdapter>> prototypeList ;
 
-	public  AbstractServer(int port,List<Class<? extends ChannelInboundHandlerAdapter>> prototypeList ,List<ChannelInboundHandlerAdapter> channelInboundHandlerAdapterList) {
+	public  AbstractServer(int port, List<Class<? extends ChannelOutboundHandlerAdapter>> prototypeList , List<ChannelInboundHandlerAdapter> channelInboundHandlerAdapterList) {
 		this.port = port;
 		this.channelInboundHandlerAdapterList = channelInboundHandlerAdapterList;
 		this.prototypeList = prototypeList;
@@ -43,8 +39,8 @@ public abstract class AbstractServer {
 						@Override
 						protected void initChannel(SocketChannel channel) throws Exception {
 							Optional.ofNullable(prototypeList).ifPresent(LambdaUtil.wrapConsumer(arr -> {
-								for (Class<? extends ChannelInboundHandlerAdapter> clazz : arr) {
-									ChannelInboundHandlerAdapter channelInboundHandlerAdapter = clazz.newInstance();
+								for (Class<? extends ChannelOutboundHandlerAdapter> clazz : arr) {
+									ChannelOutboundHandlerAdapter channelInboundHandlerAdapter = clazz.newInstance();
 									channel.pipeline().addLast(channelInboundHandlerAdapter);
 								}
 							}));

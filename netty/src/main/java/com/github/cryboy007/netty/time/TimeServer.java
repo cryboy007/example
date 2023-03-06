@@ -1,9 +1,9 @@
 package com.github.cryboy007.netty.time;
 
-import java.util.Collections;
-
 import com.github.cryboy007.netty.common.AbstractServer;
-import com.github.cryboy007.netty.pojo.TimeDecoder;
+import com.github.cryboy007.netty.pojo.TimeEncoder;
+
+import java.util.Collections;
 
 /**
  *@ClassName TimeServer
@@ -12,7 +12,7 @@ import com.github.cryboy007.netty.pojo.TimeDecoder;
  */
 public class TimeServer extends AbstractServer {
 	public TimeServer(int port) {
-		super(port, Collections.singletonList(TimeDecoder.class), Collections.singletonList(new TimeServerHandler()));
+		super(port, Collections.singletonList(TimeEncoder.class), Collections.singletonList(new TimeServerHandler()));
 	}
 
 	public static void main(String[] args) throws Exception {

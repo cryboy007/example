@@ -1,5 +1,6 @@
 package com.github.cryboy007.netty.time;
 
+import com.github.cryboy007.netty.pojo.TimeDecoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -28,6 +29,7 @@ public class TimeClient {
 					.handler(new ChannelInitializer<SocketChannel>() {
 						@Override
 						protected void initChannel(SocketChannel ch) throws Exception {
+							ch.pipeline().addLast(new TimeDecoder());
 							ch.pipeline().addLast(new TimeClientHandler());
 						}
 					});
