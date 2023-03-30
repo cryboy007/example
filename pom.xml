@@ -25,7 +25,7 @@
         <module>spring-all-example</module>
         <module>tools-example</module>
         <module>juc_example</module>
-		<module>elastic</module>
+<!--		<module>elastic</module>-->
 		<module>netty</module>
         <module>tools-example</module>
         <module>juc_example</module>
